@@ -5,3 +5,23 @@ description = "Austrian landslide inventory"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
+
+[tool.ruff]
+line-length = 79
+lint.select = [
+    "E",
+    "W",
+    "I",
+    "N",
+    "F",
+    "B",
+    "PT",
+    "RET",
+    "SIM",
+    "TID",
+    "ARG",
+    "PTH",
+    "ERA",
+    "PD",
+]
+lint.unfixable = ["E501"]
