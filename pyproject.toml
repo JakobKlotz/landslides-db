@@ -9,7 +9,12 @@ dependencies = []
 [dependency-groups]
 db = [
     "geoalchemy2>=0.18.0",
+    "geopandas>=1.1.1",
     "sqlalchemy>=2.0.43",
+]
+dev = [
+    "contextily>=1.6.2",
+    "ipykernel>=6.30.1",
 ]
 
 [tool.ruff]
