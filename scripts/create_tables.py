@@ -1,14 +1,13 @@
 from datetime import date
 from typing import Optional
 
+from constants import TARGET_CRS
 from geoalchemy2 import Geometry
 from sqlalchemy import (
     List,
     String,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
-TARGET_CRS = 32632
 
 
 class Base(DeclarativeBase):
@@ -20,6 +19,7 @@ class Landslides(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     type: Mapped[Optional[str]] = mapped_column(String(60))
+    date: Mapped[Optional[date]]
     description: Mapped[Optional[str]]
 
     # Point geom must always be present, if Polygon given, calculate the
