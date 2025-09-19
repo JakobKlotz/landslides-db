@@ -1,13 +1,13 @@
 from datetime import date
-from typing import Optional
+from typing import List, Optional
 
-from constants import TARGET_CRS
 from geoalchemy2 import Geometry
 from sqlalchemy import (
-    List,
     String,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+from scripts.constants import TARGET_CRS
 
 
 class Base(DeclarativeBase):
@@ -27,7 +27,7 @@ class Landslides(Base):
     geom: Mapped[Geometry] = mapped_column(
         Geometry(geometry_type="POINT", srid=TARGET_CRS)
     )
-    polygon_geom: Optional[Mapped[Geometry]] = mapped_column(
+    polygon_geom: Mapped[Optional[Geometry]] = mapped_column(
         Geometry(geometry_type="POLYGON", srid=TARGET_CRS)
     )
 
