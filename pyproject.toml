@@ -8,8 +8,10 @@ dependencies = []
 
 [dependency-groups]
 db = [
+    "alembic>=1.16.5",
     "geoalchemy2>=0.18.0",
     "geopandas>=1.1.1",
+    "psycopg2>=2.9.10",
     "sqlalchemy>=2.0.43",
 ]
 dev = [
