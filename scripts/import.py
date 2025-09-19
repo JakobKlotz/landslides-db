@@ -32,22 +32,25 @@ class GeoSphere:
         self.data["validFrom"] = pd.to_datetime(
             self.data["validFrom"], errors="coerce"
         ).dt.date
-        self.data = self.data.sort_values(by="validFrom", ascending=False)
 
         def _remove_duplicates(self):
+            self.data = self.data.sort_values(by="validFrom", ascending=False)
             # remove all *obvious* duplicates, keep most recent entry
             self.data = self.data.drop_duplicates(
                 subset=["validFrom", "description", "geometry"], keep="last"
             )
-            # remove entries with no valid date (validFrom) among the duplicates
-            # get all remaining duplicates by geometry
+            # remove entries with no valid date (validFrom) among the
+            # duplicates
             dup = self.data[
+                # get all duplicates (keep=False)
                 self.data.duplicated(subset="geometry", keep=False)
             ].sort_values(by=["geometry", "validFrom"])
             # remove all entries with no validFrom date *among the duplicates*
-            ids = dup[dup["validFrom"].isna()]["inspireId_localId"]
+            ids_to_drop = dup[dup["validFrom"].isna()]["inspireId_localId"]
             # drop them from the original data set
-            self.data = self.data[~self.data["inspireId_localId"].isin(ids)]
+            self.data = self.data[
+                ~self.data["inspireId_localId"].isin(ids_to_drop)
+            ]
 
         _remove_duplicates(self)
 
@@ -62,6 +65,7 @@ class GeoSphere:
         # Calculate the time difference in days to the previous entry within
         # the same geometry group
         dup["time_diff_days"] = (
+            # use to_wkt(), else groupby fails
             dup.groupby(dup.geometry.to_wkt())["validFrom"].diff()
         ).dt.days
 
@@ -78,7 +82,7 @@ class GeoSphere:
         )
         print(
             f"Found {dup['is_likely_error'].sum()} "
-            f"likely errors with a {days}-day threshold."
+            f"likely duplicates with a {days}-day threshold. Flagged them."
         )
         # map results back to original data
         self.data = self.data.merge(
@@ -100,7 +104,7 @@ class GeoSphere:
         """Dump the processed data to a file."""
         self.data.to_file(out_path, driver="GPKG")
 
-    def run(self, dump: str | None = None):
+    def run(self, file_dump: str | None = None):
         """Run all processing steps."""
         self._check_geom()
         self.subset()
@@ -108,5 +112,7 @@ class GeoSphere:
         self._flag()
         self.reproject()
 
-        if dump:
-            self.dump(dump)
+        if file_dump:
+            self.dump(file_dump)
+
+        print("Processing complete.")
