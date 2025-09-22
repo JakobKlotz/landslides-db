@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from geoalchemy2 import Geometry
 from sqlalchemy import (
+    ForeignKey,
     String,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -31,6 +32,7 @@ class Landslides(Base):
         Geometry(geometry_type="POLYGON", srid=TARGET_CRS)
     )
 
+    source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"))
     source: Mapped["Sources"] = relationship(back_populates="landslides")
 
 
