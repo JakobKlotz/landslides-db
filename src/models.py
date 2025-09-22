@@ -7,7 +7,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from scripts.constants import TARGET_CRS
+from src.constants import TARGET_CRS
 
 
 class Base(DeclarativeBase):

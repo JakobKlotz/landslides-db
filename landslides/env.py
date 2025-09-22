@@ -4,8 +4,8 @@ from alembic import context
 from geoalchemy2 import alembic_helpers
 from sqlalchemy import engine_from_config, pool
 
-from scripts import settings
-from scripts.models import Base
+from src import settings
+from src.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -2,12 +2,12 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-from constants import TARGET_CRS
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from scripts import settings
-from scripts.models import Landslides
+from constants import TARGET_CRS
+from src import settings
+from src.models import Landslides
 
 
 class GeoSphere:
