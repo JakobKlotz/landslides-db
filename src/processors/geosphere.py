@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import geopandas as gpd
@@ -7,12 +8,15 @@ from sqlalchemy.orm import sessionmaker
 
 from src import settings
 from src.constants import TARGET_CRS
-from src.models import Landslides
+from src.models import Landslides, Sources
 
 
 class GeoSphere:
-    def __init__(self, file_path: str | Path):
+    def __init__(self, *, file_path: str | Path, metadata_file: str | Path):
         self.data = gpd.read_file(file_path)
+
+        with Path(metadata_file).open() as f:
+            self.metadata = json.load(f)
 
     def _check_geom(self):
         """Check if geometries are given."""
@@ -124,31 +128,42 @@ class GeoSphere:
 
         def _create_session():
             engine = create_engine(
-                settings.DB_URI, echo=True, plugins=["geoalchemy2"]
+                settings.DB_URI, echo=False, plugins=["geoalchemy2"]
             )
             return sessionmaker(bind=engine)
 
-        session = _create_session()
+        Session = _create_session()  # noqa: N806
+        session = Session()
 
-        # remove rows with likely errors
-        # TODO verify if that's the safest option
+        # add source entry
+        source = Sources(
+            name=self.metadata["name"],
+            downloaded=pd.to_datetime(self.metadata["downloaded"]).date(),
+            modified=pd.to_datetime(self.metadata["modified"]).date(),
+            license=self.metadata["license"],
+            url=self.metadata["url"],
+        )
+
+        # TODO verify if that's the most sensible option
         data_to_import = self.data[~self.data["is_likely_error"]].copy()
+        # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
         data_to_import["geom_wkt"] = (
             f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
         )
-
-        records = data_to_import.apply(
+        landslides = data_to_import.apply(
             lambda row: Landslides(
-                date=row["validFrom"],
+                date=row["validFrom"] if pd.notna(row["validFrom"]) else None,
                 description=row["description"],
                 geom=row["geom_wkt"],
+                source=source,
             ),
             axis=1,
         )
+
         try:
-            session.add_all(records)
+            session.add_all(landslides)
             session.commit()
-            print(f"Successfully imported {len(records)} records.")
+            print(f"Successfully imported {len(landslides)} records.")
         except Exception as e:
             session.rollback()
             print(f"An error occurred: {e}")
