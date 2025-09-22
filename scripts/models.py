@@ -25,10 +25,10 @@ class Landslides(Base):
     # Point geom must always be present, if Polygon given, calculate the
     # centroid
     geom: Mapped[Geometry] = mapped_column(
-        Geometry(geometry_type="POINT", srid=TARGET_CRS, spatial_index=False)
+        Geometry(geometry_type="POINT", srid=TARGET_CRS)
     )
     polygon_geom: Mapped[Optional[Geometry]] = mapped_column(
-        Geometry(geometry_type="POLYGON", srid=TARGET_CRS, spatial_index=False)
+        Geometry(geometry_type="POLYGON", srid=TARGET_CRS)
     )
 
     source: Mapped["Sources"] = relationship(back_populates="landslides")

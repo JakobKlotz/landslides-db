@@ -3,6 +3,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from dotenv import load_dotenv
+from geoalchemy2 import alembic_helpers
 from sqlalchemy import engine_from_config, pool
 
 from scripts.models import Base
@@ -57,6 +58,10 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        # alembic helpers for spatial types
+        include_object=alembic_helpers.include_object,
+        process_revision_directives=alembic_helpers.writer,
+        render_item=alembic_helpers.render_item,
     )
 
     with context.begin_transaction():
@@ -78,7 +83,12 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            # alembic helpers
+            include_object=alembic_helpers.include_object,
+            process_revision_directives=alembic_helpers.writer,
+            render_item=alembic_helpers.render_item,
         )
 
         with context.begin_transaction():
