@@ -1,0 +1,7 @@
+.venv/
+dev/
+
+# dot env files (e.g. .env, .env.production)
+.env*
+# non-dot env files (e.g. env, env.production)
+env*
