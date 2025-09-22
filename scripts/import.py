@@ -1,8 +1,14 @@
+import os
 from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
 from constants import TARGET_CRS
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from scripts.models import Landslides
 
 
 class GeoSphere:
@@ -104,6 +110,49 @@ class GeoSphere:
         """Dump the processed data to a file."""
         self.data.to_file(out_path, driver="GPKG")
 
+    def import_to_db(self):
+        """Import the data into a PostGIS database."""
+
+        def _create_session():
+            load_dotenv()
+            db_user, db_password = (
+                os.getenv("DB_USER"),
+                os.getenv("DB_PASSWORD"),
+            )
+            db_host, db_name = os.getenv("DB_HOST"), os.getenv("DB_NAME")
+            db_uri = (
+                f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
+            )
+
+            engine = create_engine(db_uri, echo=True, plugins=["geoalchemy2"])
+            return sessionmaker(bind=engine)
+
+        session = _create_session()
+
+        # remove rows with likely errors
+        data_to_import = self.data[~self.data["is_likely_error"]]
+        data_to_import["geom_wkt"] = data_to_import.geometry.apply(
+            lambda geom: f"SRID={TARGET_CRS};{geom.wkt}"
+        )
+
+        records = data_to_import.apply(
+            lambda row: Landslides(
+                date=row["validFrom"],
+                description=row["description"],
+                geom=row["geom_wkt"],
+            ),
+            axis=1,
+        )
+        try:
+            session.add_all(records)
+            session.commit()
+            print(f"Successfully imported {len(records)} records.")
+        except Exception as e:
+            session.rollback()
+            print(f"An error occurred: {e}")
+        finally:
+            session.close()
+
     def run(self, file_dump: str | None = None):
         """Run all processing steps."""
         self._check_geom()
@@ -114,5 +163,6 @@ class GeoSphere:
 
         if file_dump:
             self.dump(file_dump)
-
         print("Processing complete.")
+
+        self.import_to_db()
