@@ -31,7 +31,7 @@ class GeoSphere:
         # a constant
         self.data = self.data[necessary_columns]
 
-    def _clean(self):
+    def clean(self):
         """Clean the data."""
         # validFrom to date (coerce - historical dates are in there)
         self.data["validFrom"] = pd.to_datetime(
@@ -59,7 +59,7 @@ class GeoSphere:
 
         _remove_duplicates(self)
 
-    def _flag(self, days: int = 1):
+    def flag(self, days: int = 1):
         """Flag potential duplicates based on a time gap (in days),
         same geometry and description."""
         dup = self.data[
@@ -148,8 +148,8 @@ class GeoSphere:
         """Run all processing steps."""
         self._check_geom()
         self.subset()
-        self._clean()
-        self._flag()
+        self.clean()
+        self.flag()
         self.reproject()
 
         if file_dump:
