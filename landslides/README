@@ -1,19 +1,33 @@
 # Landslide DB Setup
 
-## Initial Postgres Setup
+## Docker
 
-For convenience, use Docker, pull the image and run the container:
+### 1️⃣ Env variables
 
-```bash
-docker pull postgis/postgis
-docker run --name landslides-db -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgis/postgis
+First add an `.env` file at the root of the project with following content:
+
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=mysecretpassword  # TODO choose a new password
+POSTGRES_HOST=postgis  # PostGIS service in docker compose
+POSTGRES_PORT=5432
+POSTGRES_DB=landslides
 ```
 
-Create a database named `landslides`:
+Change the `POSTGRES_PASSWORD`!
+
+### 2️⃣ Build the images
 
 ```bash
-docker exec -ti landslides-db createdb -U postgres landslides
+docker compose build
+docker compose up -d postgis  # wait until the db accepts connections
+docker compose up import  # to import the data, after the import step, the
+# container is shut down
 ```
+
+## Initial Development Setup
+
+Following steps are needed for initial development and database setup.
 
 ## `alembic` setup
 
@@ -53,4 +67,28 @@ op.execute("DROP EXTENSION postgis")
 
 ```bash
 alembic upgrade head
+```
+
+### Helpers
+
+Couple of commands that are often necessary:
+
+Reset to base, with:
+
+```bash
+alembic downgrade base
+```
+
+Enter the container within `psql`:
+
+```bash
+docker exec -it landslides-db psql -U postgres -d landslides
+```
+
+Show tables, get first 10 rows and exit:
+
+```bash
+\dt
+SELECT * FROM landslides LIMIT 10;
+\q
 ```
