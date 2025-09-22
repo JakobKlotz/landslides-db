@@ -34,7 +34,7 @@ Following steps are needed for initial development and database setup.
 Init the folder structure:
 
 ```bash
-alembic init landslides
+alembic init alembic
 ```
 
 ### Customize files
