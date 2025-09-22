@@ -5,8 +5,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from constants import TARGET_CRS
 from src import settings
+from src.constants import TARGET_CRS
 from src.models import Landslides
 
 
@@ -100,13 +100,23 @@ class GeoSphere:
         self.data["is_likely_error"] = self.data["is_likely_error"].mask(
             self.data["is_likely_error"].isna(), False
         )
+        self.data["is_likely_error"] = self.data["is_likely_error"].astype(
+            bool
+        )
 
     def reproject(self, crs: str = TARGET_CRS):
         """Reproject the data to the target CRS."""
         self.data = self.data.to_crs(crs=crs)
 
-    def dump(self, out_path: str | Path):
+    def dump(self, out_path: str | Path, overwrite: bool = True):
         """Dump the processed data to a file."""
+        if Path(out_path).exists() and not overwrite:
+            raise FileExistsError(
+                f"File {out_path} already exists. Skipping dump. "
+                f"Set overwrite=True to overwrite."
+            )
+        # delete an existing GeoPackage, overwriting leads to issues
+        Path(out_path).unlink(missing_ok=True)
         self.data.to_file(out_path, driver="GPKG")
 
     def import_to_db(self):
@@ -121,9 +131,10 @@ class GeoSphere:
         session = _create_session()
 
         # remove rows with likely errors
-        data_to_import = self.data[~self.data["is_likely_error"]]
-        data_to_import["geom_wkt"] = data_to_import.geometry.apply(
-            lambda geom: f"SRID={TARGET_CRS};{geom.wkt}"
+        # TODO verify if that's the safest option
+        data_to_import = self.data[~self.data["is_likely_error"]].copy()
+        data_to_import["geom_wkt"] = (
+            f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
         )
 
         records = data_to_import.apply(
