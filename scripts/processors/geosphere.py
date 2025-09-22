@@ -1,13 +1,12 @@
-import os
 from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
 from constants import TARGET_CRS
-from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from scripts import settings
 from scripts.models import Landslides
 
 
@@ -114,17 +113,9 @@ class GeoSphere:
         """Import the data into a PostGIS database."""
 
         def _create_session():
-            load_dotenv()
-            db_user, db_password = (
-                os.getenv("DB_USER"),
-                os.getenv("DB_PASSWORD"),
+            engine = create_engine(
+                settings.DB_URI, echo=True, plugins=["geoalchemy2"]
             )
-            db_host, db_name = os.getenv("DB_HOST"), os.getenv("DB_NAME")
-            db_uri = (
-                f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}"
-            )
-
-            engine = create_engine(db_uri, echo=True, plugins=["geoalchemy2"])
             return sessionmaker(bind=engine)
 
         session = _create_session()
