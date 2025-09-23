@@ -117,3 +117,6 @@ ENV/
 
 # folders
 dev/
+
+# database
+db/
