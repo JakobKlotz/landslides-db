@@ -5,6 +5,7 @@ from geoalchemy2 import Geometry
 from sqlalchemy import (
     ForeignKey,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -34,6 +35,19 @@ class Landslides(Base):
 
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"))
     source: Mapped["Sources"] = relationship(back_populates="landslides")
+
+    __table_args__ = (
+        # TODO any more sensible options?
+        UniqueConstraint(
+            "type",
+            "date",
+            "description",
+            "geom",
+            name="uq_landslide_record",
+            # identify type, date and description NULLs as equal -> duplicates
+            postgresql_nulls_not_distinct=True,
+        ),
+    )
 
 
 class Sources(Base):
