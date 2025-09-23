@@ -1,9 +1,9 @@
 from logging.config import fileConfig
 
-from alembic import context
 from geoalchemy2 import alembic_helpers
 from sqlalchemy import engine_from_config, pool
 
+from alembic import context
 from src import settings
 from src.models import Base
 
@@ -30,6 +30,17 @@ target_metadata = Base.metadata
 # ... etc.
 
 
+# Exclude all tables not in target_metadata,
+# i.e., all tables that are present in the schemas tiger, tiger_data and
+# topology. They come with the PostGIS image
+# See installed extensions:
+# https://hub.docker.com/r/postgis/postgis/#postgispostgis
+def include_name(name, type_, parent_names):
+    if type_ == "table":
+        return name in target_metadata.tables
+    return True
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -44,6 +55,7 @@ def run_migrations_offline() -> None:
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
+        include_name=include_name,
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
@@ -73,6 +85,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
+            include_name=include_name,
             connection=connection,
             target_metadata=target_metadata,
             # alembic helpers
