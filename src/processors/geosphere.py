@@ -4,6 +4,7 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker
 
 from src import settings
@@ -144,26 +145,41 @@ class GeoSphere:
             url=self.metadata["url"],
         )
 
+        # The source object needs to be added to the session to get an ID
+        # before we can reference it.
+        session.add(source)
+        session.flush()
+
         # TODO verify if that's the most sensible option
         data_to_import = self.data[~self.data["is_likely_error"]].copy()
         # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
         data_to_import["geom_wkt"] = (
             f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
         )
-        landslides = data_to_import.apply(
-            lambda row: Landslides(
-                date=row["validFrom"] if pd.notna(row["validFrom"]) else None,
-                description=row["description"],
-                geom=row["geom_wkt"],
-                source=source,
-            ),
+        # must be a list of dicts for the insert statement
+        landslide_records = data_to_import.apply(
+            lambda row: {
+                "type": None,
+                "date": row["validFrom"]
+                if pd.notna(row["validFrom"])
+                else None,
+                "description": row["description"],
+                "geom": row["geom_wkt"],
+                "source_id": source.id,
+            },
             axis=1,
+        ).tolist()
+
+        stmt = insert(Landslides).values(landslide_records)
+        # ensure no duplicates are inserted
+        stmt = stmt.on_conflict_do_nothing(
+            index_elements=["type", "date", "description", "geom"]
         )
 
         try:
-            session.add_all(landslides)
+            session.execute(stmt)
             session.commit()
-            print(f"Successfully imported {len(landslides)} records.")
+            print("Successfully imported GeoSphere records.")
         except Exception as e:
             session.rollback()
             print(f"An error occurred: {e}")
