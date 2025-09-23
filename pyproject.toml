@@ -3,6 +3,9 @@ name = "landslides-db"
 version = "0.1.0"
 description = "Austrian landslide inventory"
 readme = "README.md"
+authors = [
+    {name = "Jakob Klotz", email = "jakob-klotz@mci.edu"},
+]
 requires-python = ">=3.13"
 dependencies = []
 
