@@ -46,3 +46,7 @@ haven't already - [link](https://git-lfs.com/).
 Put files within `data/raw/`. By default, `.gpkg` files are being tracked by
 `git lfs` (see `.gitattributes`). If you want to track a specific file or 
 another file extension expand `.gitattributes`.
+
+## Database setup
+
+For the database setup refer to this [README](./alembic/README.md)
