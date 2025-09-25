@@ -174,10 +174,6 @@ class GeoSphere:
         ).tolist()
 
         stmt = insert(Landslides).values(landslide_records)
-        # ensure no duplicates are inserted
-        stmt = stmt.on_conflict_do_nothing(
-            index_elements=["type", "date", "type", "geom"]
-        )
 
         try:
             session.execute(stmt)
