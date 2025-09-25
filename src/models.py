@@ -49,6 +49,8 @@ class Sources(Base):
     modified: Mapped[Optional[date]]
     license: Mapped[str]
     url: Mapped[str]
+    description: Mapped[Optional[str]]
+    doi: Mapped[Optional[str]]
 
     landslides: Mapped[List["Landslides"]] = relationship(
         back_populates="source"
