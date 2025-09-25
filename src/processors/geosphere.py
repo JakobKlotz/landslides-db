@@ -35,6 +35,9 @@ class GeoSphere:
         # all other columns have no real meaning, often unpopulated or
         # a constant
         self.data = self.data[necessary_columns]
+        # description is a category type (rockfall, gravity slide or flow, ...)
+        # these are used as types in the DB
+        self.data = self.data.rename(columns={"description": "type"})
 
     def clean(self):
         """Clean the data."""
@@ -47,7 +50,7 @@ class GeoSphere:
             self.data = self.data.sort_values(by="validFrom", ascending=False)
             # remove all *obvious* duplicates, keep most recent entry
             self.data = self.data.drop_duplicates(
-                subset=["validFrom", "description", "geometry"], keep="last"
+                subset=["validFrom", "type", "geometry"], keep="last"
             )
             # remove entries with no valid date (validFrom) among the
             # duplicates
@@ -66,7 +69,7 @@ class GeoSphere:
 
     def flag(self, days: int = 1):
         """Flag potential duplicates based on a time gap (in days),
-        same geometry and description."""
+        same geometry and type."""
         dup = self.data[
             self.data.duplicated(subset="geometry", keep=False)
         ].sort_values(by=["geometry", "validFrom"])
@@ -79,16 +82,16 @@ class GeoSphere:
             dup.groupby(dup.geometry.to_wkt())["validFrom"].diff()
         ).dt.days
 
-        # Check if the description is the same as the previous entry
+        # Check if the type is the same as the previous entry
         # in the group
-        dup["same_description"] = dup.groupby(dup.geometry.to_wkt())[
-            "description"
+        dup["same_type"] = dup.groupby(dup.geometry.to_wkt())[
+            "type"
         ].transform(lambda x: x.eq(x.shift()))
 
         # Flag potential errors if the time gap is small (e.g., <= 1 day)
-        # and description is the same
+        # and type is the same
         dup["is_likely_error"] = (dup["time_diff_days"] <= days) & (
-            dup["same_description"]
+            dup["same_type"]
         )
         print(
             f"Found {dup['is_likely_error'].sum()} "
@@ -159,11 +162,11 @@ class GeoSphere:
         # must be a list of dicts for the insert statement
         landslide_records = data_to_import.apply(
             lambda row: {
-                "type": None,
+                "type": row["type"],
                 "date": row["validFrom"]
                 if pd.notna(row["validFrom"])
                 else None,
-                "description": row["description"],
+                "description": None,
                 "geom": row["geom_wkt"],
                 "source_id": source.id,
             },
@@ -173,7 +176,7 @@ class GeoSphere:
         stmt = insert(Landslides).values(landslide_records)
         # ensure no duplicates are inserted
         stmt = stmt.on_conflict_do_nothing(
-            index_elements=["type", "date", "description", "geom"]
+            index_elements=["type", "date", "type", "geom"]
         )
 
         try:
