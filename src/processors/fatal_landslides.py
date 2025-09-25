@@ -51,6 +51,7 @@ class GlobalFatalLandslides:
 
         # Remove Z coordinate from points
         self.data["geometry"] = self.data["geometry"].force_2d()
+        # Project to TARGET_CRS
         self.data = self.data.to_crs(crs=TARGET_CRS)
 
         # Combination of date & geometry is unique
@@ -77,7 +78,6 @@ class GlobalFatalLandslides:
             how="left",
             max_distance=1,
         )
-        print(self.data)
         # A spatial match is only valid if the dates also match.
         # Invalidate matches where the dates are different.
         date_mismatch = self.data["Date_left"] != self.data["Date_right"]
@@ -106,34 +106,37 @@ class GlobalFatalLandslides:
         session.flush()
 
         data_to_import = self.data.copy()
+        # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
+        data_to_import["geom_wkt"] = (
+            f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
+        )
         # Check all events, and flag potential duplicates
         data_to_import["duplicated"] = data_to_import.apply(
             lambda row: is_duplicated(
                 session=session,
-                landslide_date=row["date"],
-                landslide_geom=row["geometry"],
+                landslide_date=row["date"].date(),
+                landslide_geom=row["geom_wkt"],
             ),
             axis=1,
         )
 
         n_duplicates = data_to_import["duplicated"].sum()
         if n_duplicates > 0:
-            warnings.warn(message=f"Found {n_duplicates}", stacklevel=2)
+            warnings.warn(
+                message=f"Found {n_duplicates} duplicate/s", stacklevel=2
+            )
 
         if file_dump:
             dump_gpkg(data_to_import, output_file=file_dump)
 
         # Import events, remove all duplicates first
         data_to_import = data_to_import[~data_to_import["duplicated"]]
-        # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
-        data_to_import["geom_wkt"] = (
-            f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
-        )
+
         # must be a list of dicts for the insert statement
         landslide_records = data_to_import.apply(
             lambda row: {
                 "type": row["type"],
-                "date": row["date"] if pd.notna(row["validFrom"]) else None,
+                "date": row["date"].date(),
                 "description": row["description"],
                 "geom": row["geom_wkt"],
                 "source_id": source.id,
@@ -147,7 +150,7 @@ class GlobalFatalLandslides:
             session.execute(stmt)
             session.commit()
             print(
-                f"Successfully imported {len(data_to_import)}"
+                f"Successfully imported {len(data_to_import)} "
                 "Global Fatal Landslide records."
             )
         except Exception as e:
