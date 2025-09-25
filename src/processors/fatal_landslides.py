@@ -5,8 +5,12 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
+from sqlalchemy.dialects.postgresql import insert
 
 from src.constants import AUSTRIA, TARGET_CRS
+from src.duplicates import is_duplicated
+from src.models import Landslides
+from src.utils import create_db_session, create_source_from_metadata, dump_gpkg
 
 
 class GlobalFatalLandslides:
@@ -79,9 +83,81 @@ class GlobalFatalLandslides:
         date_mismatch = self.data["Date_left"] != self.data["Date_right"]
         self.data.loc[date_mismatch, "type_override"] = None
 
-        # All other events are landslides (the default)
-        self.data["type"] = self.data["type_override"].fillna("landslide")
+        # TODO refine categories!
+        # Default event type is gravity slide or flow
+        self.data["type"] = self.data["type_override"].fillna(
+            "gravity slide or flow"
+        )
         # Drop helper columns from the join
         self.data = self.data.drop(
             columns=["type_override", "index_right", "Date_right"]
-        ).rename(columns={"Date_left": "Date"})
+        ).rename(columns={"Date_left": "date"})
+
+    def import_to_db(self, file_dump: str | None = None):
+        """Import to PostGIS database."""
+        Session = create_db_session()  # noqa: N806
+        session = Session()
+
+        source = create_source_from_metadata(self.metadata)
+
+        # The source object needs to be added to the session to get an ID
+        # before we can reference it.
+        session.add(source)
+        session.flush()
+
+        data_to_import = self.data.copy()
+        # Check all events, and flag potential duplicates
+        data_to_import["duplicated"] = data_to_import.apply(
+            lambda row: is_duplicated(
+                session=session,
+                landslide_date=row["date"],
+                landslide_geom=row["geometry"],
+            ),
+            axis=1,
+        )
+
+        n_duplicates = data_to_import["duplicated"].sum()
+        if n_duplicates > 0:
+            warnings.warn(message=f"Found {n_duplicates}", stacklevel=2)
+
+        if file_dump:
+            dump_gpkg(data_to_import, output_file=file_dump)
+
+        # Import events, remove all duplicates first
+        data_to_import = data_to_import[~data_to_import["duplicated"]]
+        # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
+        data_to_import["geom_wkt"] = (
+            f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
+        )
+        # must be a list of dicts for the insert statement
+        landslide_records = data_to_import.apply(
+            lambda row: {
+                "type": row["type"],
+                "date": row["date"] if pd.notna(row["validFrom"]) else None,
+                "description": row["description"],
+                "geom": row["geom_wkt"],
+                "source_id": source.id,
+            },
+            axis=1,
+        ).tolist()
+
+        stmt = insert(Landslides).values(landslide_records)
+
+        try:
+            session.execute(stmt)
+            session.commit()
+            print(
+                f"Successfully imported {len(data_to_import)}"
+                "Global Fatal Landslide records."
+            )
+        except Exception as e:
+            session.rollback()
+            print(f"An error occurred: {e}")
+        finally:
+            session.close()
+
+    def run(self, file_dump: str | None = None):
+        """Run all processing steps."""
+        self.subset()
+        self.clean()
+        self.import_to_db(file_dump=file_dump)
