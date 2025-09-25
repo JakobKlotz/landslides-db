@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from src import settings
 from src.constants import TARGET_CRS
 from src.models import Landslides, Sources
+from src.utils import dump_gpkg
 
 
 class GeoSphere:
@@ -116,16 +117,9 @@ class GeoSphere:
         """Reproject the data to the target CRS."""
         self.data = self.data.to_crs(crs=crs)
 
-    def dump(self, out_path: str | Path, overwrite: bool = True):
+    def dump(self, output_file: str | Path, overwrite: bool = True):
         """Dump the processed data to a file."""
-        if Path(out_path).exists() and not overwrite:
-            raise FileExistsError(
-                f"File {out_path} already exists. Skipping dump. "
-                f"Set overwrite=True to overwrite."
-            )
-        # delete an existing GeoPackage, overwriting leads to issues
-        Path(out_path).unlink(missing_ok=True)
-        self.data.to_file(out_path, driver="GPKG")
+        dump_gpkg(data=self.data, output_file=output_file, overwrite=overwrite)
 
     def import_to_db(self):
         """Import the data into a PostGIS database."""
