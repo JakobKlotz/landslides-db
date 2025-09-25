@@ -43,33 +43,20 @@ class GeoSphere:
         self.data["validFrom"] = pd.to_datetime(
             self.data["validFrom"], errors="coerce"
         ).dt.date
+        # Remove all entries with no date
+        self.data = self.data[~self.data["validFrom"].isna()]
 
-        def _remove_duplicates(self):
-            self.data = self.data.sort_values(by="validFrom", ascending=False)
-            # remove all *obvious* duplicates, keep most recent entry
-            self.data = self.data.drop_duplicates(
-                subset=["validFrom", "type", "geometry"], keep="last"
-            )
-            # remove entries with no valid date (validFrom) among the
-            # duplicates
-            dup = self.data[
-                # get all duplicates (keep=False)
-                self.data.duplicated(subset="geometry", keep=False)
-            ].sort_values(by=["geometry", "validFrom"])
-            # remove all entries with no validFrom date *among the duplicates*
-            ids_to_drop = dup[dup["validFrom"].isna()]["inspireId_localId"]
-            # drop them from the original data set
-            self.data = self.data[
-                ~self.data["inspireId_localId"].isin(ids_to_drop)
-            ]
-
-        _remove_duplicates(self)
+        self.data = self.data.sort_values(by="validFrom", ascending=False)
+        # remove all *obvious* duplicates, keep most recent entry
+        self.data = self.data.drop_duplicates(
+            subset=["validFrom", "type", "geometry"], keep="last"
+        )
 
     def flag(self, days: int = 1):
         """Flag potential duplicates based on a time gap (in days),
         same geometry and type."""
         dup = self.data[
-            self.data.duplicated(subset="geometry", keep=False)
+            self.data.duplicated(subset="geometry", keep=False)  # get all dups
         ].sort_values(by=["geometry", "validFrom"])
         # need a datetime
         dup["validFrom"] = pd.to_datetime(dup["validFrom"])
@@ -140,9 +127,7 @@ class GeoSphere:
         landslide_records = data_to_import.apply(
             lambda row: {
                 "type": row["type"],
-                "date": row["validFrom"]
-                if pd.notna(row["validFrom"])
-                else None,
+                "date": row["validFrom"],
                 "description": None,
                 "geom": row["geom_wkt"],
                 "source_id": source.id,
@@ -155,7 +140,10 @@ class GeoSphere:
         try:
             session.execute(stmt)
             session.commit()
-            print("Successfully imported GeoSphere records.")
+            print(
+                f"Successfully imported {len(landslide_records)} "
+                "GeoSphere records."
+            )
         except Exception as e:
             session.rollback()
             print(f"An error occurred: {e}")
