@@ -120,6 +120,7 @@ dev/
 
 # database
 db/
+queries/
 
 # supplementary files
 supplements/
