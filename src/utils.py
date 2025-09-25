@@ -1,10 +1,13 @@
 from pathlib import Path
+from typing import Any, Dict
 
 import geopandas as gpd
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from src import settings
+from src.models import Sources
 
 
 def convert_to_gpkg(
@@ -42,3 +45,21 @@ def create_db_session():
         settings.DB_URI, echo=False, plugins=["geoalchemy2"]
     )
     return sessionmaker(bind=engine)
+
+
+def create_source_from_metadata(metadata: Dict[str, Any]) -> Sources:
+    """Creates a Source object from a metadata dictionary."""
+    # modified is nullable
+    modified_date = metadata.get("modified")
+    if modified_date:
+        modified_date = pd.to_datetime(modified_date).date()
+
+    return Sources(
+        name=metadata["name"],
+        downloaded=pd.to_datetime(metadata["downloaded"]).date(),
+        modified=modified_date,
+        license=metadata["license"],
+        url=metadata["url"],
+        description=metadata.get("description"),  # nullable
+        doi=metadata.get("doi"),  # nullable
+    )

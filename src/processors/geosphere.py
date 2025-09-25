@@ -6,8 +6,8 @@ import pandas as pd
 from sqlalchemy.dialects.postgresql import insert
 
 from src.constants import TARGET_CRS
-from src.models import Landslides, Sources
-from src.utils import create_db_session, dump_gpkg
+from src.models import Landslides
+from src.utils import create_db_session, create_source_from_metadata, dump_gpkg
 
 
 class GeoSphere:
@@ -123,14 +123,7 @@ class GeoSphere:
         Session = create_db_session()  # noqa: N806
         session = Session()
 
-        # add source entry
-        source = Sources(
-            name=self.metadata["name"],
-            downloaded=pd.to_datetime(self.metadata["downloaded"]).date(),
-            modified=pd.to_datetime(self.metadata["modified"]).date(),
-            license=self.metadata["license"],
-            url=self.metadata["url"],
-        )
+        source = create_source_from_metadata(self.metadata)
 
         # The source object needs to be added to the session to get an ID
         # before we can reference it.
