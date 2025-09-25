@@ -3,14 +3,11 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy import create_engine
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import sessionmaker
 
-from src import settings
 from src.constants import TARGET_CRS
 from src.models import Landslides, Sources
-from src.utils import dump_gpkg
+from src.utils import create_db_session, dump_gpkg
 
 
 class GeoSphere:
@@ -123,14 +120,7 @@ class GeoSphere:
 
     def import_to_db(self):
         """Import the data into a PostGIS database."""
-
-        def _create_session():
-            engine = create_engine(
-                settings.DB_URI, echo=False, plugins=["geoalchemy2"]
-            )
-            return sessionmaker(bind=engine)
-
-        Session = _create_session()  # noqa: N806
+        Session = create_db_session()  # noqa: N806
         session = Session()
 
         # add source entry

@@ -1,6 +1,10 @@
 from pathlib import Path
 
 import geopandas as gpd
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from src import settings
 
 
 def convert_to_gpkg(
@@ -31,3 +35,10 @@ def dump_gpkg(
     # delete an existing GeoPackage, overwriting leads to issues
     Path(output_file).unlink(missing_ok=True)
     data.to_file(output_file, driver="GPKG")
+
+
+def create_db_session():
+    engine = create_engine(
+        settings.DB_URI, echo=False, plugins=["geoalchemy2"]
+    )
+    return sessionmaker(bind=engine)
