@@ -5,3 +5,6 @@ dev/
 .env*
 # non-dot env files (e.g. env, env.production)
 env*
+
+# ignore data (is a volume in docker-compose)
+data/
