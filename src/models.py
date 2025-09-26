@@ -5,7 +5,6 @@ from geoalchemy2 import Geometry
 from sqlalchemy import (
     ForeignKey,
     String,
-    UniqueConstraint,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -21,7 +20,7 @@ class Landslides(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     type: Mapped[Optional[str]] = mapped_column(String(60))
-    date: Mapped[Optional[date]]
+    date: Mapped[date]
     description: Mapped[Optional[str]]
 
     # Point geom must always be present, if Polygon given, calculate the
@@ -36,18 +35,9 @@ class Landslides(Base):
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"))
     source: Mapped["Sources"] = relationship(back_populates="landslides")
 
-    __table_args__ = (
-        # TODO any more sensible options?
-        UniqueConstraint(
-            "type",
-            "date",
-            "description",
-            "geom",
-            name="uq_landslide_record",
-            # identify type, date and description NULLs as equal -> duplicates
-            postgresql_nulls_not_distinct=True,
-        ),
-    )
+    # No UniqueConstraint - that's handled by the import logic
+    # The combination of date & geom within a certain radius defines a unique
+    # record
 
 
 class Sources(Base):
@@ -59,6 +49,8 @@ class Sources(Base):
     modified: Mapped[Optional[date]]
     license: Mapped[str]
     url: Mapped[str]
+    description: Mapped[Optional[str]]
+    doi: Mapped[Optional[str]]
 
     landslides: Mapped[List["Landslides"]] = relationship(
         back_populates="source"

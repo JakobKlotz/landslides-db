@@ -3,13 +3,11 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy import create_engine
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import sessionmaker
 
-from src import settings
 from src.constants import TARGET_CRS
-from src.models import Landslides, Sources
+from src.models import Landslides
+from src.utils import create_db_session, create_source_from_metadata, dump_gpkg
 
 
 class GeoSphere:
@@ -35,6 +33,9 @@ class GeoSphere:
         # all other columns have no real meaning, often unpopulated or
         # a constant
         self.data = self.data[necessary_columns]
+        # description is a category type (rockfall, gravity slide or flow, ...)
+        # these are used as types in the DB
+        self.data = self.data.rename(columns={"description": "type"})
 
     def clean(self):
         """Clean the data."""
@@ -42,33 +43,20 @@ class GeoSphere:
         self.data["validFrom"] = pd.to_datetime(
             self.data["validFrom"], errors="coerce"
         ).dt.date
+        # Remove all entries with no date
+        self.data = self.data[~self.data["validFrom"].isna()]
 
-        def _remove_duplicates(self):
-            self.data = self.data.sort_values(by="validFrom", ascending=False)
-            # remove all *obvious* duplicates, keep most recent entry
-            self.data = self.data.drop_duplicates(
-                subset=["validFrom", "description", "geometry"], keep="last"
-            )
-            # remove entries with no valid date (validFrom) among the
-            # duplicates
-            dup = self.data[
-                # get all duplicates (keep=False)
-                self.data.duplicated(subset="geometry", keep=False)
-            ].sort_values(by=["geometry", "validFrom"])
-            # remove all entries with no validFrom date *among the duplicates*
-            ids_to_drop = dup[dup["validFrom"].isna()]["inspireId_localId"]
-            # drop them from the original data set
-            self.data = self.data[
-                ~self.data["inspireId_localId"].isin(ids_to_drop)
-            ]
-
-        _remove_duplicates(self)
+        self.data = self.data.sort_values(by="validFrom", ascending=False)
+        # remove all *obvious* duplicates, keep most recent entry
+        self.data = self.data.drop_duplicates(
+            subset=["validFrom", "type", "geometry"], keep="last"
+        )
 
     def flag(self, days: int = 1):
         """Flag potential duplicates based on a time gap (in days),
-        same geometry and description."""
+        same geometry and type."""
         dup = self.data[
-            self.data.duplicated(subset="geometry", keep=False)
+            self.data.duplicated(subset="geometry", keep=False)  # get all dups
         ].sort_values(by=["geometry", "validFrom"])
         # need a datetime
         dup["validFrom"] = pd.to_datetime(dup["validFrom"])
@@ -79,16 +67,16 @@ class GeoSphere:
             dup.groupby(dup.geometry.to_wkt())["validFrom"].diff()
         ).dt.days
 
-        # Check if the description is the same as the previous entry
+        # Check if the type is the same as the previous entry
         # in the group
-        dup["same_description"] = dup.groupby(dup.geometry.to_wkt())[
-            "description"
+        dup["same_type"] = dup.groupby(dup.geometry.to_wkt())[
+            "type"
         ].transform(lambda x: x.eq(x.shift()))
 
         # Flag potential errors if the time gap is small (e.g., <= 1 day)
-        # and description is the same
+        # and type is the same
         dup["is_likely_error"] = (dup["time_diff_days"] <= days) & (
-            dup["same_description"]
+            dup["same_type"]
         )
         print(
             f"Found {dup['is_likely_error'].sum()} "
@@ -113,37 +101,16 @@ class GeoSphere:
         """Reproject the data to the target CRS."""
         self.data = self.data.to_crs(crs=crs)
 
-    def dump(self, out_path: str | Path, overwrite: bool = True):
+    def dump(self, output_file: str | Path, overwrite: bool = True):
         """Dump the processed data to a file."""
-        if Path(out_path).exists() and not overwrite:
-            raise FileExistsError(
-                f"File {out_path} already exists. Skipping dump. "
-                f"Set overwrite=True to overwrite."
-            )
-        # delete an existing GeoPackage, overwriting leads to issues
-        Path(out_path).unlink(missing_ok=True)
-        self.data.to_file(out_path, driver="GPKG")
+        dump_gpkg(data=self.data, output_file=output_file, overwrite=overwrite)
 
     def import_to_db(self):
         """Import the data into a PostGIS database."""
-
-        def _create_session():
-            engine = create_engine(
-                settings.DB_URI, echo=False, plugins=["geoalchemy2"]
-            )
-            return sessionmaker(bind=engine)
-
-        Session = _create_session()  # noqa: N806
+        Session = create_db_session()  # noqa: N806
         session = Session()
 
-        # add source entry
-        source = Sources(
-            name=self.metadata["name"],
-            downloaded=pd.to_datetime(self.metadata["downloaded"]).date(),
-            modified=pd.to_datetime(self.metadata["modified"]).date(),
-            license=self.metadata["license"],
-            url=self.metadata["url"],
-        )
+        source = create_source_from_metadata(self.metadata)
 
         # The source object needs to be added to the session to get an ID
         # before we can reference it.
@@ -159,11 +126,9 @@ class GeoSphere:
         # must be a list of dicts for the insert statement
         landslide_records = data_to_import.apply(
             lambda row: {
-                "type": None,
-                "date": row["validFrom"]
-                if pd.notna(row["validFrom"])
-                else None,
-                "description": row["description"],
+                "type": row["type"],
+                "date": row["validFrom"],
+                "description": None,
                 "geom": row["geom_wkt"],
                 "source_id": source.id,
             },
@@ -171,15 +136,14 @@ class GeoSphere:
         ).tolist()
 
         stmt = insert(Landslides).values(landslide_records)
-        # ensure no duplicates are inserted
-        stmt = stmt.on_conflict_do_nothing(
-            index_elements=["type", "date", "description", "geom"]
-        )
 
         try:
             session.execute(stmt)
             session.commit()
-            print("Successfully imported GeoSphere records.")
+            print(
+                f"Successfully imported {len(landslide_records)} "
+                "GeoSphere records."
+            )
         except Exception as e:
             session.rollback()
             print(f"An error occurred: {e}")
