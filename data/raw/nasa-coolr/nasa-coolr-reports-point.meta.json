@@ -1,0 +1,10 @@
+{
+    "name": "NASA Cooperative Open Online Landslide Repository (COOLR) ",
+    "downloaded": "2025-09-26",
+    "modified": null,
+    "license": "Custom (Included in the repository)",
+    "license_url": "https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521",
+    "url": "https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521",
+    "description": "The Global Landslide Catalog (GLC) was developed with the goal of identifying rainfall-triggered landslide events around the world, regardless of size, impacts or location. The GLC considers all types of mass movements triggered by rainfall and some triggered by other events, that have been reported in the media, disaster databases, scientific reports, or other sources. The GLC has been compiled since 2007 at NASA Goddard Space Flight Center.\nThe Cooperative Open Online Landslide Repository (COOLR) is a worldwide database of landslide events. It currently includes NASA’s Global Landslide Catalog (GLC), landslide reports contributed by citizen scientists, and other landslide inventories.",
+    "doi": "https://doi.org/10.1007/s11069-009-9401-4"
+}
