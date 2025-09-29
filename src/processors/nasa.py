@@ -44,20 +44,25 @@ class Nasa:
         ]
         self.data = self.data[columns_to_keep]
 
-        # Map categories
-        categories = {
-            "landslide": "landslide",
-            "mudslide": "",
+        # Map categories; GeoSphere types are used as basis:
+        # ['gravity slide or flow' 'mass movement (undefined type)' 'rockfall'
+        # 'collapse, sinkhole' 'deep seated rock slope deformation']
+        type_mapping = {
+            # term landslide is very general and doesn't specify any type
+            # of movement -> mass movement
+            "landslide": "mass movement (undefined type)",
+            "mudslide": "gravity slide or flow",
             "rock_fall": "rockfall",
-            "debris_flow": "",
+            "topple": "rockfall",
+            "debris_flow": "gravity slide or flow",
+            # is dropped
             "snow_avalanche": None,
-            "topple": "",
         }
 
         types = []
         for cat in self.data["landslide_"]:
             try:
-                types.append(categories[cat])
+                types.append(type_mapping[cat])
             except KeyError as err:
                 raise UserWarning(f"New category {cat} encountered!") from err
         self.data["type"] = types

@@ -83,10 +83,10 @@ class GlobalFatalLandslides:
         date_mismatch = self.data["Date_left"] != self.data["Date_right"]
         self.data.loc[date_mismatch, "type_override"] = None
 
-        # TODO refine categories!
-        # Default event type is gravity slide or flow
+        # Default event is mapped to "mass movement (undefined type)" stemming
+        # from the GeoSphere data set
         self.data["type"] = self.data["type_override"].fillna(
-            "gravity slide or flow"
+            "mass movement (undefined type)"
         )
         # Drop helper columns from the join
         self.data = self.data.drop(
