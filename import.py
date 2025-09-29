@@ -3,6 +3,7 @@ from pathlib import Path
 
 from src.processors.fatal_landslides import GlobalFatalLandslides
 from src.processors.geosphere import GeoSphere
+from src.processors.nasa import Nasa
 
 
 def import_data():
@@ -28,6 +29,18 @@ def import_data():
     fatal_landslides.run(
         file_dump=out_base_path
         / "global-fatal-landslides/global-fatal-landslides.gpkg"
+    )
+
+    # -------------------------------------------------------------------------
+    # NASA COOLR reports points
+    # -------------------------------------------------------------------------
+    nasa = Nasa(
+        file_path=in_base_path / "nasa-coolr/nasa-coolr-reports-point.gpkg",
+        metadata_file=in_base_path
+        / "nasa-coolr/nasa-coolr-reports-point.meta.json",
+    )
+    nasa.run(
+        file_dump=out_base_path / "nasa-coolr/nasa-coolr-reports-point.gpkg"
     )
 
 

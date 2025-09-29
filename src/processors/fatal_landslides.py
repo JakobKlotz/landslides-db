@@ -123,7 +123,9 @@ class GlobalFatalLandslides:
         n_duplicates = data_to_import["duplicated"].sum()
         if n_duplicates > 0:
             warnings.warn(
-                message=f"Found {n_duplicates} duplicate/s", stacklevel=2
+                message=f"Found {n_duplicates} duplicate/s "
+                "in the Global Fatal Landslide data.",
+                stacklevel=2,
             )
 
         if file_dump:
