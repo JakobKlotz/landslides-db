@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import geopandas as gpd
@@ -7,15 +6,18 @@ from sqlalchemy.dialects.postgresql import insert
 
 from src.constants import TARGET_CRS
 from src.models import Landslides
-from src.utils import create_db_session, create_source_from_metadata, dump_gpkg
+from src.utils import (
+    create_db_session,
+    create_source_from_metadata,
+    dump_gpkg,
+    read_metadata,
+)
 
 
 class GeoSphere:
-    def __init__(self, *, file_path: str | Path, metadata_file: str | Path):
+    def __init__(self, *, file_path: str | Path):
         self.data = gpd.read_file(file_path)
-
-        with Path(metadata_file).open() as f:
-            self.metadata = json.load(f)
+        self.metadata = read_metadata(file_path=file_path)
 
     def _check_geom(self):
         """Check if geometries are given."""

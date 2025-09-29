@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any, Dict
 
@@ -45,6 +46,29 @@ def create_db_session():
         settings.DB_URI, echo=False, plugins=["geoalchemy2"]
     )
     return sessionmaker(bind=engine)
+
+
+def read_metadata(file_path: str | Path) -> dict[str, Any]:
+    """Determine and read the metadata file name based on the given
+    GeoPackage.
+
+    Args:
+        file_path (str | Path): Path to the GeoPackage.
+
+    Returns:
+        dict[str, Any]: The content of the metadata file.
+    """
+    file_path = Path(file_path)
+    metadata_file = file_path.parent / f"{file_path.stem}.meta.json"
+
+    if not metadata_file.exists():
+        raise FileNotFoundError(
+            f"The metadata file {metadata_file} does not "
+            "exists. Alongside the GeoPackage a metadata file is needed."
+        )
+
+    with metadata_file.open() as f:
+        return json.load(f)
 
 
 def create_source_from_metadata(metadata: Dict[str, Any]) -> Sources:
