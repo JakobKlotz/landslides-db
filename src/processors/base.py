@@ -1,0 +1,129 @@
+import warnings
+from abc import ABC, abstractmethod
+from pathlib import Path
+
+import geopandas as gpd
+from sqlalchemy.dialects.postgresql import insert
+
+from src.constants import TARGET_CRS
+from src.duplicates import is_duplicated
+from src.models import Landslides
+from src.utils import (
+    create_db_session,
+    create_source_from_metadata,
+    dump_gpkg,
+    read_metadata,
+)
+
+
+class BaseProcessor(ABC):
+    """Abstract base class for data processors."""
+
+    def __init__(self, *, file_path: str | Path, dataset_name: str):
+        self.file_path = file_path
+        self.dataset_name = dataset_name
+        self.data: gpd.GeoDataFrame | None = None
+        self.metadata = read_metadata(file_path=self.file_path)
+
+    @abstractmethod
+    def run(self, file_dump: str | None = None):
+        """Run all processing steps."""
+        raise NotImplementedError
+
+    def _import_to_db(
+        self,
+        data_to_import: gpd.GeoDataFrame,
+        column_map: dict,
+        file_dump: str | None = None,
+        check_duplicates: bool = True,
+    ):
+        """
+        Import cleaned data into the PostGIS database.
+
+        Args:
+            data_to_import (gpd.GeoDataFrame): Data to import.
+            column_map (dict): Dictionary mapping DataFrame columns
+                to database columns. Expected keys: 'date', 'type',
+                'description'.
+            file_dump (str | None): Optional path to dump the data for
+                inspection.
+            check_duplicates (bool): If True, check for duplicates against
+                the database.
+        """
+        if not data_to_import.crs == TARGET_CRS:
+            raise ValueError(
+                f"CRS mismatch. Data is in {data_to_import.crs}."
+                f"Expected {TARGET_CRS}"
+            )
+        Session = create_db_session()  # noqa: N806
+        with Session() as session:
+            # The source object needs to be added to the session to get an ID
+            # before we can reference it.
+            source = create_source_from_metadata(self.metadata)
+            session.add(source)
+            session.flush()
+
+            import_data = data_to_import.copy()
+            # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
+            import_data["geom_wkt"] = (
+                f"SRID={TARGET_CRS};" + import_data["geometry"].to_wkt()
+            )
+
+            if check_duplicates:
+                # Check all events, and flag potential duplicates
+                import_data["duplicated"] = import_data.apply(
+                    lambda row: is_duplicated(
+                        session=session,
+                        landslide_date=row[column_map["date"]].date()
+                        if hasattr(row[column_map["date"]], "date")
+                        else row[column_map["date"]],
+                        landslide_geom=row["geom_wkt"],
+                    ),
+                    axis=1,
+                )
+                n_duplicates = import_data["duplicated"].sum()
+                if n_duplicates > 0:
+                    warnings.warn(
+                        f"Found {n_duplicates} duplicate/s in the "
+                        f"{self.dataset_name} data.",
+                        stacklevel=2,
+                    )
+                if file_dump:
+                    dump_gpkg(import_data, output_file=file_dump)
+                # Remove the duplicates
+                import_data = import_data[~import_data["duplicated"]]
+
+            elif file_dump:
+                dump_gpkg(import_data, output_file=file_dump)
+
+            if import_data.empty:
+                print(f"No new records to import for {self.dataset_name}.")
+                return
+
+            # must be a list of dicts for the insert statement
+            landslide_records = import_data.apply(
+                lambda row: {
+                    "type": row.get(column_map.get("type")),  # nullable
+                    "date": row[column_map["date"]].date()
+                    if hasattr(row[column_map["date"]], "date")
+                    else row[column_map["date"]],
+                    # nullable
+                    "description": row.get(column_map.get("description")),
+                    "geom": row["geom_wkt"],
+                    "source_id": source.id,
+                },
+                axis=1,
+            ).tolist()
+
+            stmt = insert(Landslides).values(landslide_records)
+
+            try:
+                session.execute(stmt)
+                session.commit()
+                print(
+                    f"Successfully imported {len(landslide_records)} "
+                    f"{self.dataset_name} records."
+                )
+            except Exception as e:
+                session.rollback()
+                print(f"An error occurred during import: {e}")

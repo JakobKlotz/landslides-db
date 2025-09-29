@@ -4,27 +4,20 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
-from sqlalchemy.dialects.postgresql import insert
 
 from src.constants import AUSTRIA, TARGET_CRS
-from src.duplicates import is_duplicated
-from src.models import Landslides
-from src.utils import (
-    create_db_session,
-    create_source_from_metadata,
-    dump_gpkg,
-    read_metadata,
-)
+from src.processors.base import BaseProcessor
 
 
-class GlobalFatalLandslides:
+class GlobalFatalLandslides(BaseProcessor):
     def __init__(self, *, file_path: str | Path):
+        super().__init__(
+            file_path=file_path, dataset_name="Global Fatal Landslides"
+        )
         # Ensure that points are within Austria
         # CRS mis-match between the two files is handled internally by
         # geopandas
         self.data = gpd.read_file(file_path, mask=AUSTRIA)
-
-        self.metadata = read_metadata(file_path=file_path)
 
     def subset(self):
         """Subset the data"""
@@ -46,7 +39,7 @@ class GlobalFatalLandslides:
         """Clean the data."""
         # Manually assign type (landslide, rockfall)
         warnings.warn(
-            message="Caution: Types are assigned to the data."
+            message="Caution: Landslide types are assigned to the data. "
             "If you have changed the source data of the global fatal landslide"
             " database check the results",
             stacklevel=2,
@@ -98,71 +91,17 @@ class GlobalFatalLandslides:
 
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
-        Session = create_db_session()  # noqa: N806
-        session = Session()
-
-        source = create_source_from_metadata(self.metadata)
-
-        # The source object needs to be added to the session to get an ID
-        # before we can reference it.
-        session.add(source)
-        session.flush()
-
-        data_to_import = self.data.copy()
-        # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
-        data_to_import["geom_wkt"] = (
-            f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
+        column_map = {
+            "type": "type",
+            "date": "date",
+            "description": "description",
+        }
+        self._import_to_db(
+            data_to_import=self.data,
+            column_map=column_map,
+            file_dump=file_dump,
+            check_duplicates=True,
         )
-        # Check all events, and flag potential duplicates
-        data_to_import["duplicated"] = data_to_import.apply(
-            lambda row: is_duplicated(
-                session=session,
-                landslide_date=row["date"].date(),
-                landslide_geom=row["geom_wkt"],
-            ),
-            axis=1,
-        )
-
-        n_duplicates = data_to_import["duplicated"].sum()
-        if n_duplicates > 0:
-            warnings.warn(
-                message=f"Found {n_duplicates} duplicate/s "
-                "in the Global Fatal Landslide data.",
-                stacklevel=2,
-            )
-
-        if file_dump:
-            dump_gpkg(data_to_import, output_file=file_dump)
-
-        # Import events, remove all duplicates first
-        data_to_import = data_to_import[~data_to_import["duplicated"]]
-
-        # must be a list of dicts for the insert statement
-        landslide_records = data_to_import.apply(
-            lambda row: {
-                "type": row["type"],
-                "date": row["date"].date(),
-                "description": row["description"],
-                "geom": row["geom_wkt"],
-                "source_id": source.id,
-            },
-            axis=1,
-        ).tolist()
-
-        stmt = insert(Landslides).values(landslide_records)
-
-        try:
-            session.execute(stmt)
-            session.commit()
-            print(
-                f"Successfully imported {len(data_to_import)} "
-                "Global Fatal Landslide records."
-            )
-        except Exception as e:
-            session.rollback()
-            print(f"An error occurred: {e}")
-        finally:
-            session.close()
 
     def run(self, file_dump: str | None = None):
         """Run all processing steps."""

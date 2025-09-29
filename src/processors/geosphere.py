@@ -2,22 +2,18 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-from sqlalchemy.dialects.postgresql import insert
 
 from src.constants import TARGET_CRS
-from src.models import Landslides
-from src.utils import (
-    create_db_session,
-    create_source_from_metadata,
-    dump_gpkg,
-    read_metadata,
-)
+from src.processors.base import BaseProcessor
 
 
-class GeoSphere:
+class GeoSphere(BaseProcessor):
+    """GeoSphere Austria data."""
+
     def __init__(self, *, file_path: str | Path):
+        super().__init__(file_path=file_path, dataset_name="GeoSphere")
+
         self.data = gpd.read_file(file_path)
-        self.metadata = read_metadata(file_path=file_path)
 
     def _check_geom(self):
         """Check if geometries are given."""
@@ -103,54 +99,23 @@ class GeoSphere:
         """Reproject the data to the target CRS."""
         self.data = self.data.to_crs(crs=crs)
 
-    def dump(self, output_file: str | Path, overwrite: bool = True):
-        """Dump the processed data to a file."""
-        dump_gpkg(data=self.data, output_file=output_file, overwrite=overwrite)
-
-    def import_to_db(self):
+    def import_to_db(self, file_dump: str | None = None):
         """Import the data into a PostGIS database."""
-        Session = create_db_session()  # noqa: N806
-        session = Session()
-
-        source = create_source_from_metadata(self.metadata)
-
-        # The source object needs to be added to the session to get an ID
-        # before we can reference it.
-        session.add(source)
-        session.flush()
-
-        # TODO verify if that's the most sensible option
+        # For GeoSphere, we only remove likely errors, not check for duplicates
+        # against the DB as it's considered our base dataset.
         data_to_import = self.data[~self.data["is_likely_error"]].copy()
-        # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
-        data_to_import["geom_wkt"] = (
-            f"SRID={TARGET_CRS};" + data_to_import["geometry"].to_wkt()
+
+        column_map = {
+            "type": "type",
+            "date": "validFrom",
+            # description is None (GeoSphere data has no appropriate field)
+        }
+        self._import_to_db(
+            data_to_import=data_to_import,
+            column_map=column_map,
+            file_dump=file_dump,
+            check_duplicates=False,
         )
-        # must be a list of dicts for the insert statement
-        landslide_records = data_to_import.apply(
-            lambda row: {
-                "type": row["type"],
-                "date": row["validFrom"],
-                "description": None,
-                "geom": row["geom_wkt"],
-                "source_id": source.id,
-            },
-            axis=1,
-        ).tolist()
-
-        stmt = insert(Landslides).values(landslide_records)
-
-        try:
-            session.execute(stmt)
-            session.commit()
-            print(
-                f"Successfully imported {len(landslide_records)} "
-                "GeoSphere records."
-            )
-        except Exception as e:
-            session.rollback()
-            print(f"An error occurred: {e}")
-        finally:
-            session.close()
 
     def run(self, file_dump: str | None = None):
         """Run all processing steps."""
@@ -159,9 +124,4 @@ class GeoSphere:
         self.clean()
         self.flag()
         self.reproject()
-
-        if file_dump:
-            self.dump(file_dump)
-        print("Processing complete.")
-
-        self.import_to_db()
+        self.import_to_db(file_dump=file_dump)
