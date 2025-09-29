@@ -28,10 +28,10 @@ class GlobalFatalLandslides:
         self.data = self.data.query("Country == 'Austria'")
         # Merge trigger, report and source into description
         self.data["description"] = (
-            "Trigger: "
-            + self.data["Trigger"]
-            + "; Report: "
+            "Report: "
             + self.data["Report_1"]
+            + "; Trigger: "
+            + self.data["Trigger"]
             + "; Source: "
             + self.data["Source_1"]
         ).str.replace("\n", " ")  # remove unnecessary newlines
