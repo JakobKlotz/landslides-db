@@ -59,7 +59,7 @@ def read_metadata(file_path: str | Path) -> dict[str, Any]:
         dict[str, Any]: The content of the metadata file.
     """
     file_path = Path(file_path)
-    metadata_file = file_path.stem / "meta.json"
+    metadata_file = file_path.parent / f"{file_path.stem}.meta.json"
 
     if not metadata_file.exists():
         raise FileNotFoundError(
