@@ -13,7 +13,6 @@ def import_data():
     # -------------------------------------------------------------------------
     geosphere = GeoSphere(
         file_path=in_base_path / "geosphere/geosphere.gpkg",
-        metadata_file=in_base_path / "geosphere/geosphere.meta.json",
     )
     geosphere.run(file_dump=out_base_path / "geosphere/geosphere.gpkg")
 
@@ -23,8 +22,6 @@ def import_data():
     fatal_landslides = GlobalFatalLandslides(
         file_path=in_base_path
         / "global-fatal-landslides/global-fatal-landslides.gpkg",
-        metadata_file=in_base_path
-        / "global-fatal-landslides/global-fatal-landslides.meta.json",
     )
     fatal_landslides.run(
         file_dump=out_base_path
@@ -36,8 +33,6 @@ def import_data():
     # -------------------------------------------------------------------------
     nasa = Nasa(
         file_path=in_base_path / "nasa-coolr/nasa-coolr-reports-point.gpkg",
-        metadata_file=in_base_path
-        / "nasa-coolr/nasa-coolr-reports-point.meta.json",
     )
     nasa.run(
         file_dump=out_base_path / "nasa-coolr/nasa-coolr-reports-point.gpkg"
