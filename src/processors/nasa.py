@@ -3,10 +3,10 @@ import warnings
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 from sqlalchemy.dialects.postgresql import insert
 
-from constants import AUSTRIA
-from src.constants import TARGET_CRS
+from src.constants import AUSTRIA, TARGET_CRS
 from src.duplicates import is_duplicated
 from src.models import Landslides
 from src.utils import create_db_session, create_source_from_metadata, dump_gpkg
@@ -20,9 +20,6 @@ class Nasa:
         # CRS mis-match between the two files is handled internally by
         # geopandas
         self.data = gpd.read_file(file_path, mask=AUSTRIA)
-        # sanity check
-        if not len(self.data) == (self.data["country_na"] == "Austria").sum():
-            raise ValueError("Some points are not in Austria")
 
         with Path(metadata_file).open() as f:
             self.metadata = json.load(f)
@@ -77,7 +74,13 @@ class Nasa:
 
         # Remove all events with no type
         self.data = self.data[~self.data["type"].isna()]
-        self.data["event_date"] = self.data["event_date"].date()
+        # convert datetime64[ns] -> python date objects
+        self.data["event_date"] = pd.to_datetime(
+            self.data["event_date"]
+        ).dt.date
+
+        # Project to target CRS
+        self.data = self.data.to_crs(crs=TARGET_CRS)
 
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
@@ -99,7 +102,7 @@ class Nasa:
         data_to_import["duplicated"] = data_to_import.apply(
             lambda row: is_duplicated(
                 session=session,
-                landslide_date=row["date"],
+                landslide_date=row["event_date"],
                 landslide_geom=row["geom_wkt"],
             ),
             axis=1,
@@ -108,7 +111,9 @@ class Nasa:
         n_duplicates = data_to_import["duplicated"].sum()
         if n_duplicates > 0:
             warnings.warn(
-                message=f"Found {n_duplicates} duplicate/s", stacklevel=2
+                message=f"Found {n_duplicates} duplicate/s "
+                f"in the NASA COOLR data",
+                stacklevel=2,
             )
 
         if file_dump:
@@ -143,3 +148,8 @@ class Nasa:
             print(f"An error occurred: {e}")
         finally:
             session.close()
+
+    def run(self, file_dump: str | None = None):
+        """Run all processing steps."""
+        self.clean()
+        self.import_to_db(file_dump=file_dump)
