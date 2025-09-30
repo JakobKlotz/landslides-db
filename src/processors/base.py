@@ -44,7 +44,7 @@ class BaseProcessor(ABC):
             data_to_import (gpd.GeoDataFrame): Data to import.
             column_map (dict): Dictionary mapping DataFrame columns
                 to database columns. Expected keys: 'date', 'type',
-                'description'.
+                'report', 'report_source', 'report_url'.
             file_dump (str | None): Optional path to dump the data for
                 inspection.
             check_duplicates (bool): If True, check for duplicates against
@@ -107,8 +107,10 @@ class BaseProcessor(ABC):
                     "date": row[column_map["date"]].date()
                     if hasattr(row[column_map["date"]], "date")
                     else row[column_map["date"]],
-                    # nullable
-                    "description": row.get(column_map.get("description")),
+                    # all nullable
+                    "report": row.get(column_map.get("report")),
+                    "report_source": row.get(column_map.get("report_source")),
+                    "report_url": row.get(column_map.get("report_url")),
                     "geom": row["geom_wkt"],
                     "source_id": source.id,
                 },

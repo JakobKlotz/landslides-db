@@ -21,7 +21,9 @@ class Landslides(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     type: Mapped[Optional[str]] = mapped_column(String(60))
     date: Mapped[date]
-    description: Mapped[Optional[str]]
+    report: Mapped[Optional[str]]
+    report_source: Mapped[Optional[str]]
+    report_url: Mapped[Optional[str]]
 
     # Point geom must always be present, if Polygon given, calculate the
     # centroid

@@ -108,7 +108,7 @@ class GeoSphere(BaseProcessor):
         column_map = {
             "type": "type",
             "date": "validFrom",
-            # description is None (GeoSphere data has no appropriate field)
+            # report fields are None (GeoSphere data has no appropriate field)
         }
         self._import_to_db(
             data_to_import=data_to_import,

@@ -22,17 +22,17 @@ class GlobalFatalLandslides(BaseProcessor):
     def subset(self):
         """Subset the data"""
         self.data = self.data.query("Country == 'Austria'")
-        # Merge trigger, report and source into description
-        self.data["description"] = (
-            "Report: "
-            + self.data["Report_1"]
-            + "; Trigger: "
-            + self.data["Trigger"]
-            + "; Source: "
-            + self.data["Source_1"]
-        ).str.replace("\n", " ")  # remove unnecessary newlines
-        # Drop unused columns
-        self.data = self.data[["Date", "description", "geometry"]]
+        # remove potential newlines
+        self.data["Report_1"] = self.data["Report_1"].str.replace("\n", " ")
+        # Select necessary columns
+        self.data = self.data[
+            [
+                "Date",
+                "Report_1",
+                "Source_1",
+                "geometry",
+            ]
+        ]
         self.data = self.data.sort_values("Date").reset_index(drop=True)
 
     def clean(self):
@@ -95,6 +95,8 @@ class GlobalFatalLandslides(BaseProcessor):
             "type": "type",
             "date": "date",
             "description": "description",
+            "report": "Report_1",
+            "report_url": "Source_1",
         }
         self._import_to_db(
             data_to_import=self.data,
