@@ -21,19 +21,15 @@ class Nasa(BaseProcessor):
         """Subset the data"""
         # Date must be given
         self.data = self.data[~self.data["event_date"].isna()]
-        # To comply with the license, keep source_nam and source_lin and add
-        # them to description
-        self.data["description"] = (
-            "Report: "
-            + self.data["event_desc"]
-            + "; Source Link: "
-            + self.data["source_lin"]
-            + "; Source Name: "
-            + self.data["source_nam"]
-        ).str.replace("\n", " ")  # remove newlines
+        # Remove newlines
+        self.data["event_desc"] = self.data["event_desc"].str.replace(
+            "\n", " "
+        )
 
         columns_to_keep = [
-            "description",
+            "event_desc",  # report
+            "source_lin",  # also to comply with the license
+            "source_nam",  # comply with the license
             "event_date",
             "landslide_",
             "geometry",
@@ -81,6 +77,9 @@ class Nasa(BaseProcessor):
             "type": "type",
             "date": "event_date",
             "description": "description",
+            "report": "event_desc",
+            "report_source": "source_nam",
+            "report_url": "source_lin",
         }
         self._import_to_db(
             data_to_import=self.data,
