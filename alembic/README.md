@@ -18,6 +18,8 @@ Change the `POSTGRES_PASSWORD`!
 
 ### 2️⃣ Build the images
 
+With Docker installed, build and start the containers with:
+
 ```bash
 docker compose build
 docker compose up -d postgis  # wait until the db accepts connections
@@ -25,7 +27,9 @@ docker compose up import  # to import the data, after the import step, the
 # container is shut down
 ```
 
-## Initial Development Setup
+---
+
+## For developers
 
 Following steps are needed for initial development and database setup.
 
