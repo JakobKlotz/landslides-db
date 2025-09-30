@@ -4,8 +4,9 @@ version = "0.1.0"
 description = "Austrian landslide inventory"
 readme = "README.md"
 authors = [
-    {name = "Jakob Klotz", email = "jakob-klotz@mci.edu"},
+    {name = "Jakob Klotz", email = "jakob.klotz@mci.edu"},
 ]
+license = "CC-BY-SA-4.0"
 requires-python = ">=3.13"
 dependencies = []
 
