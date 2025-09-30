@@ -1,9 +1,38 @@
-# Landslides DB
+![PostGIS](https://img.shields.io/badge/PostGIS-3840A0?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=white)
 
-Austrian landslide inventory.
-... an attempt to build the most comprehensive landslide database.
+# Austrian landslide inventory
 
-## Project installation
+This project aims to build the most comprehensive, open-source landslide 
+inventory for Austria. By consolidating data from various national and 
+international sources, we provide a PostGIS database that can be easily setup 
+using Docker.
+
+## Getting Started
+
+To get your own instance of the database up and running, please follow the 
+setup instructions which use Docker for easy deployment.
+
+Please refer to the [**Database Setup Guide**](./alembic/README.md).
+
+## Data Sources
+
+The inventory is built by incorporating data from the following sources:
+
+- [GeoSphere](https://data.inspire.gv.at/d69f276f-24b4-4c16-aed7-349135921fa1)
+- [Global Fatal Landslides](https://www.arcgis.com/home/item.html?id=7c9397b261aa436ebfbc41396bd96d06)
+- [NASA COOLR](https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521)
+
+We are continuously working on adding more data sources to enhance the
+comprehensiveness of the inventory.
+
+---
+
+## Development setup
+
+If you want to contribute to the project, follow these steps to set up your 
+development environment.
 
 ### 1️⃣ Python packages 
 
@@ -46,7 +75,3 @@ haven't already - [link](https://git-lfs.com/).
 Put files within `data/raw/`. By default, `.gpkg` files are being tracked by
 `git lfs` (see `.gitattributes`). If you want to track a specific file or 
 another file extension expand `.gitattributes`.
-
-## Database setup
-
-For the database setup refer to this [README](./alembic/README.md)
