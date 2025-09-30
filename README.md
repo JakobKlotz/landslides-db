@@ -20,9 +20,16 @@ Please refer to the [**Database Setup Guide**](./alembic/README.md).
 
 The inventory is built by incorporating data from the following sources:
 
-- [GeoSphere](https://data.inspire.gv.at/d69f276f-24b4-4c16-aed7-349135921fa1)
-- [Global Fatal Landslides](https://www.arcgis.com/home/item.html?id=7c9397b261aa436ebfbc41396bd96d06)
-- [NASA COOLR](https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521)
+- [GeoSphere](https://data.inspire.gv.at/d69f276f-24b4-4c16-aed7-349135921fa1):
+    CC BY 4.0 ([link](https://creativecommons.org/licenses/by/4.0/))
+- [Global Fatal Landslides](https://www.arcgis.com/home/item.html?id=7c9397b261aa436ebfbc41396bd96d06):
+    Open Government License ([link](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/))
+- [NASA COOLR](https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521): 
+    Custom License ([link](./data/raw/nasa-coolr/LICENSE))
+
+> [!NOTE]
+> Each record in the database is linked to its original source to ensure clear
+> data provenance and proper attribution.
 
 We are continuously working on adding more data sources to enhance the
 comprehensiveness of the inventory.
