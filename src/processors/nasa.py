@@ -18,7 +18,7 @@ class Nasa(BaseProcessor):
         self.data = gpd.read_file(file_path, mask=AUSTRIA)
 
     def clean(self):
-        """Subset the data"""
+        """Subset and clean the data"""
         # Date must be given
         self.data = self.data[~self.data["event_date"].isna()]
         # Remove newlines
