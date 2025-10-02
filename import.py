@@ -4,6 +4,7 @@ from pathlib import Path
 from src.processors.fatal_landslides import GlobalFatalLandslides
 from src.processors.geosphere import GeoSphere
 from src.processors.nasa import Nasa
+from src.processors.wlv import WLV
 
 
 def import_data():
@@ -37,6 +38,12 @@ def import_data():
     nasa.run(
         file_dump=out_base_path / "nasa-coolr/nasa-coolr-reports-point.gpkg"
     )
+
+    # -------------------------------------------------------------------------
+    # WLV
+    # -------------------------------------------------------------------------
+    wlv = WLV(file_path=in_base_path / "wlv/wlv.gpkg")
+    wlv.run(file_dump=out_base_path / "wlv/wlv.gpkg")
 
 
 import_data()
