@@ -28,6 +28,8 @@ The inventory is built by incorporating data from the following sources:
     Open Government License ([link](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/))
 - [NASA COOLR](https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521): 
     Custom License ([link](./data/raw/nasa-coolr/LICENSE))
+- [WLV](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527)
+    No Limitations ([link](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527))
 
 > [!NOTE]
 > Each record in the database is linked to its original source to ensure clear
