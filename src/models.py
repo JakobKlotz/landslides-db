@@ -19,7 +19,7 @@ class Landslides(Base):
     __tablename__ = "landslides"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    type: Mapped[Optional[str]] = mapped_column(String(60))
+
     date: Mapped[date]
     report: Mapped[Optional[str]]
     report_source: Mapped[Optional[str]]
@@ -34,12 +34,28 @@ class Landslides(Base):
         Geometry(geometry_type="POLYGON", srid=TARGET_CRS)
     )
 
+    classification_id: Mapped[int] = mapped_column(ForeignKey("classification.id"))
+    classification: Mapped["Classification"] = relationship(
+        back_populates="landslides"
+    )
+
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"))
     source: Mapped["Sources"] = relationship(back_populates="landslides")
 
     # No UniqueConstraint - that's handled by the import logic
     # The combination of date & geom within a certain radius defines a unique
     # record
+
+
+class Classification(Base):
+    __tablename__ = "classification"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True)
+
+    landslides: Mapped[List["Landslides"]] = relationship(
+        back_populates="classification"
+    )
 
 
 class Sources(Base):
