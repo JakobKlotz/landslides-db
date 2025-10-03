@@ -4,7 +4,9 @@ import geopandas as gpd
 import pandas as pd
 
 from src.constants import TARGET_CRS
+from src.models import Classification
 from src.processors.base import BaseProcessor
+from src.utils import create_db_session
 
 
 class GeoSphere(BaseProcessor):
@@ -99,6 +101,23 @@ class GeoSphere(BaseProcessor):
         """Reproject the data to the target CRS."""
         self.data = self.data.to_crs(crs=crs)
 
+    def populate_classification_table(self):
+        """Populate the classification table with unique landslide types."""
+        Session = create_db_session()  # noqa: N806
+        with Session() as session:
+            unique_classifications = set(sorted(self.data["type"].unique()))
+
+            if not unique_classifications:
+                raise RuntimeError("No classifications found!")
+
+            new_classifications = [
+                Classification(name=classification)
+                for classification in unique_classifications
+            ]
+            session.add_all(new_classifications)
+            session.commit()
+            print(f"Added {len(unique_classifications)} classifications.")
+
     def import_to_db(self, file_dump: str | None = None):
         """Import the data into a PostGIS database."""
         # For GeoSphere, we only remove likely errors, not check for duplicates
@@ -106,7 +125,7 @@ class GeoSphere(BaseProcessor):
         data_to_import = self.data[~self.data["is_likely_error"]].copy()
 
         column_map = {
-            "type": "type",
+            "classification": "type",
             "date": "validFrom",
             # report fields are None (GeoSphere data has no appropriate field)
         }
@@ -124,4 +143,5 @@ class GeoSphere(BaseProcessor):
         self.clean()
         self.flag()
         self.reproject()
+        self.populate_classification_table()
         self.import_to_db(file_dump=file_dump)
