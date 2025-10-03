@@ -57,7 +57,7 @@ class WLV(BaseProcessor):
 
     def import_to_db(self, file_dump: str | None = None):
         column_map = {
-            "type": "category",
+            "classification": "category",
             "date": "validFrom",
         }
 

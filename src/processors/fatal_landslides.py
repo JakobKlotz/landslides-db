@@ -92,7 +92,7 @@ class GlobalFatalLandslides(BaseProcessor):
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
         column_map = {
-            "type": "type",
+            "classification": "type",
             "date": "date",
             "description": "description",
             "report": "Report_1",

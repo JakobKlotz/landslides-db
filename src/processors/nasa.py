@@ -74,7 +74,7 @@ class Nasa(BaseProcessor):
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
         column_map = {
-            "type": "type",
+            "classification": "type",
             "date": "event_date",
             "description": "description",
             "report": "event_desc",
