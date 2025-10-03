@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 from src.constants import TARGET_CRS
 from src.duplicates import is_duplicated
-from src.models import Landslides
+from src.models import Classification, Landslides
 from src.utils import (
     create_db_session,
     create_source_from_metadata,
@@ -43,7 +43,7 @@ class BaseProcessor(ABC):
         Args:
             data_to_import (gpd.GeoDataFrame): Data to import.
             column_map (dict): Dictionary mapping DataFrame columns
-                to database columns. Expected keys: 'date', 'type',
+                to database columns. Expected keys: 'date', 'classification',
                 'report', 'report_source', 'report_url'.
             file_dump (str | None): Optional path to dump the data for
                 inspection.
@@ -62,6 +62,10 @@ class BaseProcessor(ABC):
             source = create_source_from_metadata(self.metadata)
             session.add(source)
             session.flush()
+
+            # Fetch all classifications to map names to IDs
+            classifications = session.query(Classification).all()
+            classification_map = {c.name: c.id for c in classifications}
 
             import_data = data_to_import.copy()
             # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
@@ -103,7 +107,6 @@ class BaseProcessor(ABC):
             # must be a list of dicts for the insert statement
             landslide_records = import_data.apply(
                 lambda row: {
-                    "type": row.get(column_map.get("type")),  # nullable
                     "date": row[column_map["date"]].date()
                     if hasattr(row[column_map["date"]], "date")
                     else row[column_map["date"]],
@@ -112,6 +115,9 @@ class BaseProcessor(ABC):
                     "report_source": row.get(column_map.get("report_source")),
                     "report_url": row.get(column_map.get("report_url")),
                     "geom": row["geom_wkt"],
+                    "classification_id": classification_map.get(
+                        row.get(column_map.get("classification"))
+                    ),
                     "source_id": source.id,
                 },
                 axis=1,
