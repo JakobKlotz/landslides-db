@@ -8,3 +8,5 @@ env*
 
 # ignore data (is a volume in docker-compose)
 data/
+
+assets/
