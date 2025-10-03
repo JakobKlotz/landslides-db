@@ -8,6 +8,8 @@ from src.processors.base import BaseProcessor
 
 
 class WLV(BaseProcessor):
+    """Wildbach- und Lawinenverbauung data set."""
+
     def __init__(self, *, file_path: str | Path):
         super().__init__(
             file_path=file_path, dataset_name="Wildbach- und Lawinenverbauung"
@@ -28,8 +30,7 @@ class WLV(BaseProcessor):
         # Remove all entries with no date
         self.data = self.data[~self.data["validFrom"].isna()]
 
-        # Prepare types
-        # Extract broad category
+        # Extract broad classification
         self.data["category"] = self.data["nameOfEvent"].str.split(": ").str[0]
 
         # Sanity check
@@ -47,17 +48,17 @@ class WLV(BaseProcessor):
         self.data = self.data[
             self.data["category"].isin(("Rutschung", "Steinschlag"))
         ]
-        # Map them to the GeoSphere types
-        self.data["category"] = self.data["category"].replace(
+        # Map them to the GeoSphere classifications
+        self.data["classification"] = self.data["category"].replace(
             {"Rutschung": "gravity slide or flow", "Steinschlag": "rockfall"}
         )
 
         # Subset
-        self.data = self.data[["category", "validFrom", "geometry"]]
+        self.data = self.data[["classification", "validFrom", "geometry"]]
 
     def import_to_db(self, file_dump: str | None = None):
         column_map = {
-            "classification": "category",
+            "classification": "classification",
             "date": "validFrom",
         }
 

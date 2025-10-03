@@ -34,7 +34,9 @@ class Landslides(Base):
         Geometry(geometry_type="POLYGON", srid=TARGET_CRS)
     )
 
-    classification_id: Mapped[int] = mapped_column(ForeignKey("classification.id"))
+    classification_id: Mapped[int] = mapped_column(
+        ForeignKey("classification.id")
+    )
     classification: Mapped["Classification"] = relationship(
         back_populates="landslides"
     )

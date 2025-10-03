@@ -33,9 +33,9 @@ class GeoSphere(BaseProcessor):
         # all other columns have no real meaning, often unpopulated or
         # a constant
         self.data = self.data[necessary_columns]
-        # description is a category type (rockfall, gravity slide or flow, ...)
-        # these are used as types in the DB
-        self.data = self.data.rename(columns={"description": "type"})
+        # description is a classification
+        # (rockfall, gravity slide or flow, ...)
+        self.data = self.data.rename(columns={"description": "classification"})
 
     def clean(self):
         """Clean the data."""
@@ -49,12 +49,12 @@ class GeoSphere(BaseProcessor):
         self.data = self.data.sort_values(by="validFrom", ascending=False)
         # remove all *obvious* duplicates, keep most recent entry
         self.data = self.data.drop_duplicates(
-            subset=["validFrom", "type", "geometry"], keep="last"
+            subset=["validFrom", "classification", "geometry"], keep="last"
         )
 
     def flag(self, days: int = 1):
         """Flag potential duplicates based on a time gap (in days),
-        same geometry and type."""
+        exact same geometry and classification."""
         dup = self.data[
             self.data.duplicated(subset="geometry", keep=False)  # get all dups
         ].sort_values(by=["geometry", "validFrom"])
@@ -67,16 +67,16 @@ class GeoSphere(BaseProcessor):
             dup.groupby(dup.geometry.to_wkt())["validFrom"].diff()
         ).dt.days
 
-        # Check if the type is the same as the previous entry
+        # Check if the classification is the same as the previous entry
         # in the group
-        dup["same_type"] = dup.groupby(dup.geometry.to_wkt())[
-            "type"
+        dup["same_classification"] = dup.groupby(dup.geometry.to_wkt())[
+            "classification"
         ].transform(lambda x: x.eq(x.shift()))
 
         # Flag potential errors if the time gap is small (e.g., <= 1 day)
-        # and type is the same
+        # and classification is the same
         dup["is_likely_error"] = (dup["time_diff_days"] <= days) & (
-            dup["same_type"]
+            dup["same_classification"]
         )
         print(
             f"Found {dup['is_likely_error'].sum()} "
@@ -102,10 +102,13 @@ class GeoSphere(BaseProcessor):
         self.data = self.data.to_crs(crs=crs)
 
     def populate_classification_table(self):
-        """Populate the classification table with unique landslide types."""
+        """Populate the classification table with unique landslide
+        classifications."""
         Session = create_db_session()  # noqa: N806
         with Session() as session:
-            unique_classifications = set(sorted(self.data["type"].unique()))
+            unique_classifications = set(
+                sorted(self.data["classification"].unique())
+            )
 
             if not unique_classifications:
                 raise RuntimeError("No classifications found!")
@@ -125,9 +128,9 @@ class GeoSphere(BaseProcessor):
         data_to_import = self.data[~self.data["is_likely_error"]].copy()
 
         column_map = {
-            "classification": "type",
+            "classification": "classification",
             "date": "validFrom",
-            # report fields are None (GeoSphere data has no appropriate field)
+            # report fields are None (no appropriate field)
         }
         self._import_to_db(
             data_to_import=data_to_import,

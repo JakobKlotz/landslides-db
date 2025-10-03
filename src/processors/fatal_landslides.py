@@ -10,6 +10,8 @@ from src.processors.base import BaseProcessor
 
 
 class GlobalFatalLandslides(BaseProcessor):
+    """Global Fatal Landslides data set."""
+
     def __init__(self, *, file_path: str | Path):
         super().__init__(
             file_path=file_path, dataset_name="Global Fatal Landslides"
@@ -37,11 +39,11 @@ class GlobalFatalLandslides(BaseProcessor):
 
     def clean(self):
         """Clean the data."""
-        # Manually assign type (landslide, rockfall)
+        # Manually assign classification (landslide, rockfall)
         warnings.warn(
-            message="Caution: Landslide types are assigned to the data. "
-            "If you have changed the source data of the global fatal landslide"
-            " database check the results",
+            message="Caution: Landslide classifications are assigned to the "
+            "data. If you have changed the source data of the global fatal "
+            "landslide database check the results",
             stacklevel=2,
         )
 
@@ -61,7 +63,7 @@ class GlobalFatalLandslides(BaseProcessor):
                     Point(651192.3868625985, 5212271.343543028),
                     Point(807247.7813673844, 5256032.494610518),
                 ],
-                "type_override": ["rockfall", "rockfall"],
+                "classification_override": ["rockfall", "rockfall"],
             },
             crs=self.data.crs,
         )
@@ -77,22 +79,22 @@ class GlobalFatalLandslides(BaseProcessor):
         # A spatial match is only valid if the dates also match.
         # Invalidate matches where the dates are different.
         date_mismatch = self.data["Date_left"] != self.data["Date_right"]
-        self.data.loc[date_mismatch, "type_override"] = None
+        self.data.loc[date_mismatch, "classification_override"] = None
 
         # Default event is mapped to "mass movement (undefined type)" stemming
         # from the GeoSphere data set
-        self.data["type"] = self.data["type_override"].fillna(
-            "mass movement (undefined type)"
-        )
+        self.data["classification"] = self.data[
+            "classification_override"
+        ].fillna("mass movement (undefined type)")
         # Drop helper columns from the join
         self.data = self.data.drop(
-            columns=["type_override", "index_right", "Date_right"]
+            columns=["classification_override", "index_right", "Date_right"]
         ).rename(columns={"Date_left": "date"})
 
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
         column_map = {
-            "classification": "type",
+            "classification": "classification",
             "date": "date",
             "description": "description",
             "report": "Report_1",

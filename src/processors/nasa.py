@@ -8,7 +8,7 @@ from src.processors.base import BaseProcessor
 
 
 class Nasa(BaseProcessor):
-    """Import NASA COOLR landslide report points."""
+    """NASA COOLR landslide report points."""
 
     def __init__(self, *, file_path: str | Path):
         super().__init__(file_path=file_path, dataset_name="NASA COOLR")
@@ -36,12 +36,12 @@ class Nasa(BaseProcessor):
         ]
         self.data = self.data[columns_to_keep]
 
-        # Map categories; GeoSphere types are used as basis:
+        # Map categories; GeoSphere classifications are used as basis:
         # ['gravity slide or flow' 'mass movement (undefined type)' 'rockfall'
         # 'collapse, sinkhole' 'deep seated rock slope deformation']
-        type_mapping = {
-            # term landslide is very general and doesn't specify any type
-            # of movement -> mass movement
+        classification_mapping = {
+            # term landslide is very general and doesn't
+            # specify any type of movement -> mass movement
             "landslide": "mass movement (undefined type)",
             "mudslide": "gravity slide or flow",
             "rock_fall": "rockfall",
@@ -51,18 +51,19 @@ class Nasa(BaseProcessor):
             "snow_avalanche": None,
         }
 
-        types = []
+        classifications = []
         for cat in self.data["landslide_"]:
             try:
-                types.append(type_mapping[cat])
+                classifications.append(classification_mapping[cat])
             except KeyError as err:
                 raise UserWarning(
-                    f"New category {cat} encountered!\nCheck the type mapping"
+                    f"New category {cat} encountered!\n"
+                    "Check the classification mapping"
                 ) from err
-        self.data["type"] = types
+        self.data["classification"] = classifications
 
-        # Remove all events with no type
-        self.data = self.data[~self.data["type"].isna()]
+        # Remove all events with no classification
+        self.data = self.data[~self.data["classification"].isna()]
         # convert datetime64[ns] -> python date objects
         self.data["event_date"] = pd.to_datetime(
             self.data["event_date"]
@@ -74,7 +75,7 @@ class Nasa(BaseProcessor):
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
         column_map = {
-            "classification": "type",
+            "classification": "classification",
             "date": "event_date",
             "description": "description",
             "report": "event_desc",
