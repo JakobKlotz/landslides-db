@@ -3,11 +3,14 @@
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=white)
 ![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg?style=for-the-badge)
 
+<div align="center">
+  <img src="./assets/header.png" alt="Header" width="700"/>
+</div>
 
 # Austrian Landslide Inventory
 
 This project aims to build the most comprehensive, open-source landslide 
-inventory for Austria. By consolidating data from various national and 
+data base for Austria. By consolidating data from various national and 
 international sources, we provide a PostGIS database that can be easily setup 
 using Docker.
 
