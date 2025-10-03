@@ -11,6 +11,7 @@ def import_data():
     in_base_path, out_base_path = Path("./data/raw"), Path("./data/processed")
     # -------------------------------------------------------------------------
     # GeoSphere
+    # Must be first, to populate the classification table
     # -------------------------------------------------------------------------
     geosphere = GeoSphere(
         file_path=in_base_path / "geosphere/geosphere.gpkg",
