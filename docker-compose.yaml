@@ -1,6 +1,7 @@
 services:
-  postgis:
+  db:
     image: postgis/postgis:17-3.5
+    env_file: .env
     volumes:
       - ./db:/var/lib/postgresql/data
     ports:
@@ -12,7 +13,8 @@ services:
       timeout: 5s
       retries: 5
 
-  import:
+  # run migrations and import data; exits when done
+  importer:
     build: .
     command: bash -c "alembic upgrade head && python import.py"
     volumes:

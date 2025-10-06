@@ -9,7 +9,7 @@ First add an `.env` file at the root of the project with following content:
 ```env
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=mysecretpassword  # TODO choose a new password
-POSTGRES_HOST=postgis  # PostGIS service in docker compose
+POSTGRES_HOST=db  # PostGIS service in docker compose
 POSTGRES_PORT=5432
 POSTGRES_DB=landslides
 ```
@@ -22,8 +22,8 @@ With Docker installed, build and start the containers with:
 
 ```bash
 docker compose build
-docker compose up -d postgis  # wait until the db accepts connections
-docker compose up import  # to import the data, after the import step, the
+docker compose up -d db  # wait until the db accepts connections
+docker compose up importer  # to import the data, after the import step, the
 # container is shut down
 ```
 
