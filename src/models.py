@@ -30,9 +30,6 @@ class Landslides(Base):
     geom: Mapped[Geometry] = mapped_column(
         Geometry(geometry_type="POINT", srid=TARGET_CRS)
     )
-    polygon_geom: Mapped[Optional[Geometry]] = mapped_column(
-        Geometry(geometry_type="POLYGON", srid=TARGET_CRS)
-    )
 
     classification_id: Mapped[int] = mapped_column(
         ForeignKey("classification.id")
