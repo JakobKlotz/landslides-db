@@ -9,7 +9,7 @@ First add an `.env` file at the root of the project with following content:
 ```env
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=mysecretpassword  # TODO choose a new password
-POSTGRES_HOST=postgis  # PostGIS service in docker compose
+POSTGRES_HOST=db  # PostGIS service in docker compose
 POSTGRES_PORT=5432
 POSTGRES_DB=landslides
 ```
@@ -22,10 +22,28 @@ With Docker installed, build and start the containers with:
 
 ```bash
 docker compose build
-docker compose up -d postgis  # wait until the db accepts connections
-docker compose up import  # to import the data, after the import step, the
+docker compose up -d db  # wait until the db accepts connections
+docker compose up importer  # to import the data, after the import step, the
 # container is shut down
 ```
+
+Access the database at `localhost:5432` with a PostGIS enabled client
+(e.g. [`pgAdmin`](https://www.pgadmin.org/)).
+
+### 3️⃣ [Optional] API
+
+Using [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv), an API
+is provided to access the data. This service is optional, but could provide
+an entrypoint for further applications.
+To start the service, run:
+
+```bash
+docker compose up -d api
+```
+
+Navigate to [http://localhost:7800](http://localhost:7800) to preview
+the endpoints. `public.landslides_view` provides a comprehensive view of the
+landslide data.
 
 ---
 
@@ -81,18 +99,4 @@ Reset to base, with:
 
 ```bash
 alembic downgrade base
-```
-
-Enter the container within `psql`:
-
-```bash
-docker exec -it landslides-db psql -U postgres -d landslides
-```
-
-Show tables, get first 10 rows and exit:
-
-```bash
-\dt
-SELECT * FROM landslides LIMIT 10;
-\q
 ```

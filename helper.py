@@ -10,4 +10,4 @@ if db_dir.exists() and db_dir.is_dir():
     shutil.rmtree(db_dir)
 
 subprocess.run(["docker", "compose", "build"])
-subprocess.run(["docker", "compose", "up", "postgis", "-d"])
+subprocess.run(["docker", "compose", "up", "db", "-d"])

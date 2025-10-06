@@ -1,23 +1,45 @@
 services:
-  postgis:
+  db:
     image: postgis/postgis:17-3.5
+    env_file: .env
     volumes:
       - ./db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    env_file: .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d landslides"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - landslides-net
 
-  import:
+  # run migrations and import data; exits when done
+  importer:
     build: .
+    env_file: .env
     command: bash -c "alembic upgrade head && python import.py"
     volumes:
       - ./data:/app/data
     depends_on:
-      postgis:
+      db:
         condition: service_healthy
+    networks:
+      - landslides-net
+    
+  api:
+    image: pramsey/pg_tileserv:20250131
     env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/landslides
+    ports:
+      - "7800:7800"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - landslides-net
+
+networks:
+  landslides-net:
+    driver: bridge
