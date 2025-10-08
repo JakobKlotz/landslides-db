@@ -13,6 +13,7 @@ services:
       retries: 5
     networks:
       - landslides-net
+      - web
 
   # run migrations and import data; exits when done
   importer:
@@ -26,20 +27,24 @@ services:
         condition: service_healthy
     networks:
       - landslides-net
+      - web
     
   api:
     image: pramsey/pg_tileserv:20250131
     env_file: .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/landslides
-    ports:
-      - "7800:7800"
+    # For web deployment: Do not expose port to host
+    #   - "7800:7800"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - landslides-net
+      - web
 
 networks:
   landslides-net:
     driver: bridge
+  web:
+    external: true
