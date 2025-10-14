@@ -2,11 +2,29 @@
 
 Instructions to set up the PostGIS data base with Docker.
 
-## Docker
+## Prerequisites
+
+It is assumed that Git is installed on your system.
+Two more tools are required to follow the steps below:
+
+- [Docker](https://www.docker.com)
+- [Git LFS](https://git-lfs.com/)
+
+Install both tools to proceed.
+
+> [!NOTE]
+> Since this project is dependent on larger files to fill the data base, git 
+> LFS is required to pull these files from the repository. After installation,
+> be sure to run `git lfs install` once. A `git clone` of the repository will
+> then pull the required files automatically.
+
+## Setup Steps
 
 ### 1️⃣ Env variables
 
-First add an `.env` file at the root of the project with following content:
+With the repository cloned, navigate to the project folder and set up the
+environment variables. To do so, create an `.env` file at the root of the 
+project with following content:
 
 ```env
 POSTGRES_USER=postgres
