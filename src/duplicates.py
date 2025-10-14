@@ -11,7 +11,7 @@ def find_duplicate(
     session: Session,
     landslide_date: date,
     landslide_geom: WKTElement,
-    search_radius_meters: int = 500,
+    search_radius_meters: int = 1_000,
 ) -> Landslides | None:
     """
     Checks for existing landslides at the same date within a given radius.
@@ -25,7 +25,7 @@ def find_duplicate(
             stored geometries).
         search_radius_meters (int, optional): Radius in meters within which an
             existing landslide is considered a potential duplicate. Defaults to
-            500.
+            1_000.
     Returns:
         Landslides | None: The first matching Landslides instance if a
         potential duplicate is found; otherwise None.
@@ -44,7 +44,7 @@ def is_duplicated(
     session: Session,
     landslide_date: date,
     landslide_geom: WKTElement,
-    search_radius_meters: int = 500,
+    search_radius_meters: int = 1_000,
 ) -> bool:
     """
     Boolean check for an existing event at the same date within a given radius.
@@ -58,7 +58,7 @@ def is_duplicated(
             stored geometries).
         search_radius_meters (int, optional): Radius in meters within which an
             existing landslide is considered a potential duplicate. Defaults to
-            500.
+            1_000.
     Returns:
         bool: True if a potential duplicate is found; otherwise False.
     """
