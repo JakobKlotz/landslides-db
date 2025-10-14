@@ -18,6 +18,9 @@ services:
   importer:
     build: .
     env_file: .env
+    # override POSTGRES_HOST to point to the 'db' service in this compose file
+    environment:
+      - POSTGRES_HOST=db
     command: bash -c "alembic upgrade head && python import.py"
     volumes:
       - ./data:/app/data
@@ -29,8 +32,10 @@ services:
     
   api:
     image: pramsey/pg_tileserv:20250131
+    restart: unless-stopped
     env_file: .env
     environment:
+      # point to the 'db' service as host
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/landslides
     ports:
       - "7800:7800"
