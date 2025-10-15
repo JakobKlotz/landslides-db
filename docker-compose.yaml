@@ -21,7 +21,7 @@ services:
     # override POSTGRES_HOST to point to the 'db' service in this compose file
     environment:
       - POSTGRES_HOST=db
-    command: bash -c "alembic upgrade head && python app/import.py"
+    command: bash -c "alembic upgrade head && python import.py"
     volumes:
       - ./data:/app/data
     depends_on:
