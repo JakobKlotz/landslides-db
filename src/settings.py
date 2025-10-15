@@ -20,4 +20,4 @@ db_host = _read_env_variable("POSTGRES_HOST")
 db_port = _read_env_variable("POSTGRES_PORT")
 db_name = _read_env_variable("POSTGRES_DB")
 
-DB_URI = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+DB_URI = f"postgresql+psycopg://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
