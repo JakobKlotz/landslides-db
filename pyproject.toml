@@ -15,10 +15,12 @@ db = [
     "alembic>=1.16.5",
     "geoalchemy2>=0.18.0",
     "geopandas>=1.1.1",
-    "psycopg2-binary>=2.9.10",
+    "psycopg[binary]>=3.2.10",
     "python-dotenv>=1.1.1",
     "sqlalchemy>=2.0.43",
 ]
+
+[dependency-groups]
 dev = [
     "contextily>=1.6.2",
     "ipykernel>=6.30.1",
