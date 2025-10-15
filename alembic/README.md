@@ -1,36 +1,83 @@
 # Landslide DB Setup
 
-## Docker
+Instructions to set up the PostGIS data base with Docker.
+
+## Prerequisites
+
+It is assumed that Git is installed on your system.
+Two more tools are required to follow the steps below:
+
+- [Docker](https://www.docker.com)
+- [Git LFS](https://git-lfs.com/)
+
+Install both tools to proceed.
+
+> [!NOTE]
+> Since this project is dependent on larger files to fill the data base, git 
+> LFS is required to pull these files from the repository. After installation,
+> be sure to run `git lfs install` once. A `git clone` of the repository will
+> then pull the required files automatically.
+
+## Setup Steps
 
 ### 1️⃣ Env variables
 
-First add an `.env` file at the root of the project with following content:
+With the repository cloned, navigate to the project folder and set up the
+environment variables. To do so, create an `.env` file at the root of the 
+project with following content:
 
 ```env
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=mysecretpassword  # TODO choose a new password
-POSTGRES_HOST=db  # PostGIS service in docker compose
+POSTGRES_PASSWORD=mysecretpassword  # TODO set a secure password!
+POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 POSTGRES_DB=landslides
 ```
 
-Change the `POSTGRES_PASSWORD`!
+> [!IMPORTANT]
+> Be sure to change the `POSTGRES_PASSWORD` to a password of your choice!
+
+The data base will be created with the details provided in the `.env` file.
 
 ### 2️⃣ Build the images
 
-With Docker installed, build and start the containers with:
+With Docker installed, we have to build the containers first:
 
 ```bash
 docker compose build
-docker compose up -d db  # wait until the db accepts connections
-docker compose up importer  # to import the data, after the import step, the
-# container is shut down
 ```
 
-Access the database at `localhost:5432` with a PostGIS enabled client
-(e.g. [`pgAdmin`](https://www.pgadmin.org/)).
+### 3️⃣ Initialize the database & Import data
 
-### 3️⃣ [Optional] API
+Next up, we can initialize the data base with:
+
+```bash
+docker compose up -d db
+```
+
+The initialization might take a couple of seconds, you can check the logs with
+
+```bash
+docker compose logs -f db
+```
+
+Wait until you see a line like:
+
+```bash
+2025-10-14 13:58:49.274 UTC [1] LOG:  database system is ready to accept connections
+```
+
+Once the database is ready, we can import the data with the `importer` service:
+
+```bash
+docker compose up importer
+```
+
+Upon completion, the `importer` service will exit automatically.
+You can now access the database at `localhost:5432` with a PostGIS enabled 
+client (e.g. [`pgAdmin`](https://www.pgadmin.org/)).
+
+### 4️⃣ [Optional] API
 
 Using [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv), an API
 is provided to access the data. This service is optional, but could provide
@@ -43,60 +90,4 @@ docker compose up -d api
 
 Navigate to [http://localhost:7800](http://localhost:7800) to preview
 the endpoints. `public.landslides_view` provides a comprehensive view of the
-landslide data.
-
----
-
-## For developers
-
-Following steps are needed for initial development and database setup.
-
-## `alembic` setup
-
-Init the folder structure:
-
-```bash
-alembic init alembic
-```
-
-### Customize files
-
-Create a dedicated `.env` for the database secrets and switch to `env.py`, 
-add lines to load the variables. 
-
-### Autogenerate revision
-
-With `alembic` autogenerate the first revision from the `sqlalchemy` models:
-
-```bash
-alembic revision --autogenerate -m "db table structure"
-```
-
-Navigate to the first revision and ensure that the `postgis` extension is
-enabled. Add following at the beginning of `upgrade()`:
-
-```python
-op.execute("CREATE EXTENSION IF NOT EXISTS postgis")
-```
-
-... and at the end to `downgrade()`:
-
-```python
-op.execute("DROP EXTENSION postgis")
-```
-
-### Apply revision
-
-```bash
-alembic upgrade head
-```
-
-### Helpers
-
-Couple of commands that are often necessary:
-
-Reset to base, with:
-
-```bash
-alembic downgrade base
-```
+landslide data including sources and classifications.
