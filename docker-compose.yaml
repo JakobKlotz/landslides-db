@@ -18,7 +18,7 @@ services:
   importer:
     build: .
     env_file: .env
-    command: bash -c "alembic upgrade head && python import.py"
+    command: bash -c "alembic upgrade head && python app/import.py"
     volumes:
       - ./data:/app/data
     depends_on:
