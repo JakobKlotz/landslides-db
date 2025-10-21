@@ -24,6 +24,11 @@ services:
     command: bash -c "alembic upgrade head && python import.py"
     volumes:
       - ./data:/app/data
+      - ./src:/app/src
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+      - ./import.py:/app/import.py
+
     depends_on:
       db:
         condition: service_healthy
