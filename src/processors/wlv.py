@@ -73,3 +73,7 @@ class WLV(BaseProcessor):
         """Run all processing steps."""
         self.clean()
         self.import_to_db(file_dump=file_dump)
+
+    def __call__(self, file_dump: str | None = None):
+        """Allow instances to be called like functions."""
+        self.run(file_dump=file_dump)

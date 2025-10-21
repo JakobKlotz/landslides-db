@@ -6,45 +6,24 @@ from src.processors.geosphere import GeoSphere
 from src.processors.nasa import Nasa
 from src.processors.wlv import WLV
 
+in_base_path, out_base_path = Path("./data/raw"), Path("./data/processed")
 
-def import_data():
-    in_base_path, out_base_path = Path("./data/raw"), Path("./data/processed")
-    # -------------------------------------------------------------------------
-    # GeoSphere
-    # Must be first, to populate the classification table
-    # -------------------------------------------------------------------------
-    geosphere = GeoSphere(
-        file_path=in_base_path / "geosphere/geosphere.gpkg",
-    )
-    geosphere.run(file_dump=out_base_path / "geosphere/geosphere.gpkg")
+processors = [
+    # GeoSphere must be first, to populate the classification table
+    (GeoSphere, "geosphere/geosphere.gpkg"),
+    (
+        GlobalFatalLandslides,
+        "global-fatal-landslides/global-fatal-landslides.gpkg",
+    ),
+    (Nasa, "nasa-coolr/nasa-coolr-reports-point.gpkg"),
+    (WLV, "wlv/wlv.gpkg"),
+]
 
-    # -------------------------------------------------------------------------
-    # Global Fatal Landslides
-    # -------------------------------------------------------------------------
-    fatal_landslides = GlobalFatalLandslides(
-        file_path=in_base_path
-        / "global-fatal-landslides/global-fatal-landslides.gpkg",
-    )
-    fatal_landslides.run(
-        file_dump=out_base_path
-        / "global-fatal-landslides/global-fatal-landslides.gpkg"
-    )
+for ProcClass, rel_path in processors:
+    in_path = in_base_path / rel_path
+    out_path = out_base_path / rel_path
+    # create parent folders if they don't exist
+    out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # -------------------------------------------------------------------------
-    # NASA COOLR reports points
-    # -------------------------------------------------------------------------
-    nasa = Nasa(
-        file_path=in_base_path / "nasa-coolr/nasa-coolr-reports-point.gpkg",
-    )
-    nasa.run(
-        file_dump=out_base_path / "nasa-coolr/nasa-coolr-reports-point.gpkg"
-    )
-
-    # -------------------------------------------------------------------------
-    # WLV
-    # -------------------------------------------------------------------------
-    wlv = WLV(file_path=in_base_path / "wlv/wlv.gpkg")
-    wlv.run(file_dump=out_base_path / "wlv/wlv.gpkg")
-
-
-import_data()
+    proc = ProcClass(file_path=in_path)
+    proc(file_dump=out_path)

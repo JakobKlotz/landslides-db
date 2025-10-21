@@ -49,4 +49,4 @@ comprehensiveness of the inventory.
 
 Contributions are always welcome! 😊
 Please refer to the [**Contribution Guidelines**](./CONTRIBUTING.md) for more
-details on how to setup you development environment.
+details on how to setup your development environment.
