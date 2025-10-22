@@ -26,8 +26,13 @@ class BaseProcessor(ABC):
         self.metadata = read_metadata(file_path=self.file_path)
 
     @abstractmethod
-    def run(self, file_dump: str | None = None):
+    def run(self):
         """Run all processing steps."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def __call__(self):
+        """Allow instances to be called like functions."""
         raise NotImplementedError
 
     def _import_to_db(

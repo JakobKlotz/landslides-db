@@ -1,8 +1,8 @@
-"""Create landslide view for pg_tileserv
+"""create lanslide view
 
-Revision ID: 846f31a0e6e4
-Revises: e2839191dbbe
-Create Date: 2025-10-06 13:03:48.047058
+Revision ID: 1fc1738312c6
+Revises: 5854ae4edfbb
+Create Date: 2025-10-22 08:38:41.203164
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '846f31a0e6e4'
-down_revision: Union[str, Sequence[str], None] = 'e2839191dbbe'
+revision: str = '1fc1738312c6'
+down_revision: Union[str, Sequence[str], None] = '5854ae4edfbb'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -24,10 +24,13 @@ def upgrade() -> None:
     SELECT
         l.id,
         l.date,
-        l.source_id,
         l.report,
+        l.report_source,
+        l.report_url,
         c.name AS classification_name,
+        l.source_id,
         s.name AS source_name,
+        s.doi AS source_doi,
         l.geom
     FROM
         public.landslides l
@@ -40,4 +43,3 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute("DROP VIEW IF EXISTS public.landslides_view;")
-

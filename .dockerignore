@@ -1,6 +1,12 @@
 .venv/
 dev/
 
+# project files
+.pre-commit-config.yaml
+CONTRIBUTING.md
+LICENSE
+README.md
+
 # dot env files (e.g. .env, .env.production)
 .env*
 # non-dot env files (e.g. env, env.production)
@@ -8,5 +14,6 @@ env*
 
 # ignore data (is a volume in docker-compose)
 data/
-
 assets/
+db/
+scripts/
