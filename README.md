@@ -10,9 +10,11 @@
 # Austrian Landslide Inventory
 
 This project aims to build the most comprehensive, open-source landslide 
-data base for Austria. By consolidating data from various national and 
-international sources, we provide a PostGIS database that can be easily setup 
-using Docker.
+data base for Austria. The data base encompasses different mass movement 
+phenomena (see [Classifications](#classifications) for more info).
+
+By consolidating data from various national and international sources, we 
+provide a PostGIS database that can be easily setup using Docker.
 
 > [!WARNING]
 > This project is under active development. The database schema and its records
@@ -44,6 +46,19 @@ The inventory is built by incorporating data from the following sources:
 
 We are continuously working on adding more data sources to enhance the
 comprehensiveness of the inventory.
+
+## Classifications
+
+The database stores a classification for each event and includes multiple types
+of mass-movement phenomena, **not only landslides**. Types present include:
+
+- gravity slide or flow
+- rockfall
+- mass movement (undefined)
+- deep‑seated rock slope deformation
+- collapse / sinkhole
+
+See the classification table in the database for the set of types.
 
 ## Contributing
 
