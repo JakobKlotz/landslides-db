@@ -4,8 +4,9 @@ services:
     env_file: .env
     volumes:
       - ./db:/var/lib/postgresql
-    ports:
-      - "5432:5432"
+    # don't expose data base to the host
+    # ports:
+    #   - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d landslides"]
       interval: 5s
@@ -13,7 +14,6 @@ services:
       retries: 5
     networks:
       - landslides-net
-      - web
 
   # run migrations and import data; exits when done
   importer:
@@ -35,7 +35,6 @@ services:
         condition: service_healthy
     networks:
       - landslides-net
-      - web
     
   api:
     image: pramsey/pg_tileserv:20250131
@@ -45,13 +44,14 @@ services:
       # point to the 'db' service as host
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/landslides
     # For web deployment: Do not expose port to host
+    # ports:
     #   - "7800:7800"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - landslides-net
-      - web
+      - web  # external network for connection with other services
 
 networks:
   landslides-net:
