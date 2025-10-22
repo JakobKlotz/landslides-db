@@ -24,6 +24,8 @@ With `alembic` autogenerate the first revision from the `sqlalchemy` models:
 alembic revision --autogenerate -m "db table structure"
 ```
 
+### Extensions
+
 Navigate to the first revision and ensure that the `postgis` extension is
 enabled. Add following at the beginning of `upgrade()`:
 
@@ -35,6 +37,28 @@ op.execute("CREATE EXTENSION IF NOT EXISTS postgis")
 
 ```python
 op.execute("DROP EXTENSION postgis")
+```
+
+---
+
+> [!NOTE]
+> By default, `postgis` images have the `postgis` extensions pre-initialized.
+
+#### `postgis_topology` & `postgis_tiger_geocoder`
+
+... these two extension also come pre-initialized with the image. Since both of
+them are not used, they are dropped alongside their respective schemas.
+
+Add these lines to the first `alembic` revision in `downgrade()`:
+
+```python
+op.execute("""
+    DROP EXTENSION IF EXISTS postgis_tiger_geocoder CASCADE;
+    DROP EXTENSION IF EXISTS postgis_topology CASCADE;
+    DROP SCHEMA IF EXISTS tiger CASCADE;
+    DROP SCHEMA IF EXISTS tiger_data CASCADE;
+    DROP SCHEMA IF EXISTS topology CASCADE;
+""")
 ```
 
 ### Apply revision
