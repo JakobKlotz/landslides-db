@@ -1,10 +1,7 @@
 # Dedicated import script
 from pathlib import Path
 
-from src.processors.fatal_landslides import GlobalFatalLandslides
-from src.processors.geosphere import GeoSphere
-from src.processors.nasa import Nasa
-from src.processors.wlv import WLV
+from db import WLV, GeoSphere, GlobalFatalLandslides, Nasa
 
 in_base_path, out_base_path = Path("./data/raw"), Path("./data/processed")
 

@@ -1,6 +1,6 @@
 # Connect to the db and export the landslide_view as GeoPackage
 import geopandas as gpd
-from src.utils import create_db_session
+from db.utils import create_db_session
 
 out_file = "landslides-db"
 
