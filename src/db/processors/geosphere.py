@@ -3,10 +3,10 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
-from src.constants import TARGET_CRS
-from src.models import Classification
-from src.processors.base import BaseProcessor
-from src.utils import create_db_session
+from db.constants import TARGET_CRS
+from db.models import Classification
+from db.processors.base import BaseProcessor
+from db.utils import create_db_session
 
 
 class GeoSphere(BaseProcessor):

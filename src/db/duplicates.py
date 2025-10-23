@@ -4,7 +4,7 @@ from geoalchemy2.functions import ST_DWithin
 from geoalchemy2.shape import WKTElement
 from sqlalchemy.orm import Session
 
-from src.models import Landslides
+from db.models import Landslides
 
 
 def find_duplicate(

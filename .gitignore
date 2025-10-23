@@ -119,7 +119,7 @@ ENV/
 dev/
 
 # database
-db/
+/db/
 queries/
 
 # supplementary files

@@ -5,8 +5,8 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
 
-from src.constants import AUSTRIA, TARGET_CRS
-from src.processors.base import BaseProcessor
+from db.constants import AUSTRIA, TARGET_CRS
+from db.processors.base import BaseProcessor
 
 
 class GlobalFatalLandslides(BaseProcessor):
