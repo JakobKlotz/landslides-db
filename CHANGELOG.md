@@ -2,7 +2,11 @@
 
 ### 🛠 Dev changes
 
-- Refactored the project into an installable Python package. This allows for consistent and simplified module imports for the data import logic across the project.
+- Refactored the project into an installable Python package. This allows for 
+consistent and simplified module imports for the data import logic across the 
+project.
+- Incorporated the `TARGET_CRS` re-projection in the `BaseProcessor` class 
+for a unified approach.
 
 ## Version: `0.1.0`
 
