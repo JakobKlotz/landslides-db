@@ -18,7 +18,9 @@ class GlobalFatalLandslides(BaseProcessor):
         # Ensure that points are within Austria
         # CRS mis-match between the two files is handled internally by
         # geopandas
-        self.data = gpd.read_file(file_path, mask=self.austria)
+        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
+            crs=self.target_crs
+        )
 
     def subset(self):
         """Subset the data"""
@@ -48,8 +50,6 @@ class GlobalFatalLandslides(BaseProcessor):
 
         # Remove Z coordinate from points
         self.data["geometry"] = self.data["geometry"].force_2d()
-        # Project to target crs
-        self.data = self.data.to_crs(crs=self.target_crs)
 
         # Combination of date & geometry is unique
         # Those two events were rockfalls, see their description

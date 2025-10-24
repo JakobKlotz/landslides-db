@@ -13,7 +13,7 @@ class WLV(BaseProcessor):
         super().__init__(
             file_path=file_path, dataset_name="Wildbach- und Lawinenverbauung"
         )
-        # mask is not strictly necessary
+        # mask is not strictly necessary (left in for a unified approach)
         self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
             crs=self.target_crs
         )

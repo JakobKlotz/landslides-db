@@ -14,7 +14,10 @@ class GeoSphere(BaseProcessor):
     def __init__(self, *, file_path: str | Path):
         super().__init__(file_path=file_path, dataset_name="GeoSphere")
 
-        self.data = gpd.read_file(file_path)
+        # mask is not strictly necessary (left in for a unified approach)
+        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
+            self.target_crs
+        )
 
     def _check_geom(self):
         """Check if geometries are given."""
@@ -79,7 +82,8 @@ class GeoSphere(BaseProcessor):
         )
         print(
             f"Found {dup['is_likely_error'].sum()} "
-            f"likely duplicates with a {days}-day threshold. Flagged them."
+            f"likely duplicates with a {days}-day threshold. "
+            "Flagged them for removal."
         )
         # map results back to original data
         self.data = self.data.merge(
@@ -95,10 +99,6 @@ class GeoSphere(BaseProcessor):
         self.data["is_likely_error"] = self.data["is_likely_error"].astype(
             bool
         )
-
-    def reproject(self):
-        """Reproject the data to the target CRS."""
-        self.data = self.data.to_crs(crs=self.target_crs)
 
     def populate_classification_table(self):
         """Populate the classification table with unique landslide
@@ -136,7 +136,7 @@ class GeoSphere(BaseProcessor):
 
     def import_to_db(self, file_dump: str | None = None):
         """Import the data into a PostGIS database."""
-        # For GeoSphere, we only remove likely errors, not check for duplicates
+        # For GeoSphere, we only remove likely errors, no check for duplicates
         # against the DB as it's considered our base dataset.
         data_to_import = self.data[~self.data["is_likely_error"]].copy()
 
@@ -158,7 +158,6 @@ class GeoSphere(BaseProcessor):
         self.subset()
         self.clean()
         self.flag()
-        self.reproject()
         self.populate_classification_table()
         self.import_to_db(file_dump=file_dump)
 

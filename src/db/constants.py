@@ -1,3 +1,4 @@
+# Sets CRS as constant which is used for all data base records
 from importlib.resources import files
 from pathlib import Path
 

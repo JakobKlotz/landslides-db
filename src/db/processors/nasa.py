@@ -14,7 +14,9 @@ class Nasa(BaseProcessor):
         # Ensure that points are within Austria
         # CRS mis-match between the two files is handled internally by
         # geopandas
-        self.data = gpd.read_file(file_path, mask=self.austria)
+        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
+            self.target_crs
+        )
 
     def clean(self):
         """Subset and clean the data"""
@@ -67,9 +69,6 @@ class Nasa(BaseProcessor):
         self.data["event_date"] = pd.to_datetime(
             self.data["event_date"]
         ).dt.date
-
-        # Project to target CRS
-        self.data = self.data.to_crs(crs=self.target_crs)
 
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
