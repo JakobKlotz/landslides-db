@@ -7,8 +7,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from db.settings import DB_URI
 from db.models import Sources
+from db.settings import DB_URI
 
 
 def convert_to_gpkg(
@@ -42,9 +42,7 @@ def dump_gpkg(
 
 
 def create_db_session():
-    engine = create_engine(
-        DB_URI, echo=False, plugins=["geoalchemy2"]
-    )
+    engine = create_engine(DB_URI, echo=False, plugins=["geoalchemy2"])
     return sessionmaker(bind=engine)
 
 

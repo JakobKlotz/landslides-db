@@ -1,10 +1,11 @@
+# Sets CRS as constant which is used for all data base records
+from importlib.resources import files
 from pathlib import Path
 
 import geopandas as gpd
-from importlib.resources import files
 
 TARGET_CRS = 32632
-TARGET_CRS_SRS = "EPSG:32632"
+TARGET_CRS_SRS = f"EPSG:{TARGET_CRS}"
 
 
 def _read_austrian_border(
@@ -17,7 +18,7 @@ def _read_austrian_border(
     if input_file is None:
         # Load from package resources
         input_file = files().joinpath("data/NUTS_RG_03M_2024_4326.gpkg")
-    
+
     data = gpd.read_file(input_file)
     austria = data.query("CNTR_CODE == 'AT' and LEVL_CODE == 0").reset_index(
         drop=True

@@ -5,7 +5,7 @@ from pathlib import Path
 import geopandas as gpd
 from sqlalchemy.dialects.postgresql import insert
 
-from db.constants import TARGET_CRS
+from db.constants import AUSTRIA, TARGET_CRS
 from db.duplicates import is_duplicated
 from db.models import Classification, Landslides
 from db.utils import (
@@ -20,10 +20,20 @@ class BaseProcessor(ABC):
     """Abstract base class for data processors."""
 
     def __init__(self, *, file_path: str | Path, dataset_name: str):
+        self.target_crs = TARGET_CRS
+        self.austria = AUSTRIA
         self.file_path = file_path
         self.dataset_name = dataset_name
-        self.data: gpd.GeoDataFrame | None = None
+        self.data = self.read_file()
         self.metadata = read_metadata(file_path=self.file_path)
+
+    def read_file(self) -> gpd.GeoDataFrame:
+        # Ensure that points are within Austria
+        # CRS mis-match between the two files is handled internally by
+        # geopandas
+        return gpd.read_file(self.file_path, mask=self.austria).to_crs(
+            crs=self.target_crs
+        )
 
     @abstractmethod
     def run(self):
@@ -55,10 +65,10 @@ class BaseProcessor(ABC):
             check_duplicates (bool): If True, check for duplicates against
                 the database.
         """
-        if not data_to_import.crs == TARGET_CRS:
+        if not data_to_import.crs == self.target_crs:
             raise ValueError(
                 f"CRS mismatch. Data is in {data_to_import.crs}."
-                f"Expected {TARGET_CRS}"
+                f"Expected {self.target_crs}"
             )
         Session = create_db_session()  # noqa: N806
         with Session() as session:
@@ -75,7 +85,7 @@ class BaseProcessor(ABC):
             import_data = data_to_import.copy()
             # see https://geoalchemy-2.readthedocs.io/en/latest/orm_tutorial.html#create-an-instance-of-the-mapped-class
             import_data["geom_wkt"] = (
-                f"SRID={TARGET_CRS};" + import_data["geometry"].to_wkt()
+                f"SRID={self.target_crs};" + import_data["geometry"].to_wkt()
             )
 
             if check_duplicates:
