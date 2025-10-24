@@ -108,6 +108,20 @@ class GeoSphere(BaseProcessor):
             unique_classifications = set(
                 sorted(self.data["classification"].unique())
             )
+            expected_classifications = set(
+                [
+                    "collapse, sinkhole",
+                    "deep seated rock slope deformation",
+                    "gravity slide or flow",
+                    "mass movement (undefined type)",
+                    "rockfall",
+                ]
+            )
+            if not unique_classifications == expected_classifications:
+                raise RuntimeError(
+                    "Did not find all expected classifications: "
+                    f"{expected_classifications}"
+                )
 
             if not unique_classifications:
                 raise RuntimeError("No classifications found!")
