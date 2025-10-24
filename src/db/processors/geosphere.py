@@ -3,7 +3,6 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
-from db.constants import TARGET_CRS
 from db.models import Classification
 from db.processors.base import BaseProcessor
 from db.utils import create_db_session
@@ -97,9 +96,9 @@ class GeoSphere(BaseProcessor):
             bool
         )
 
-    def reproject(self, crs: str = TARGET_CRS):
+    def reproject(self):
         """Reproject the data to the target CRS."""
-        self.data = self.data.to_crs(crs=crs)
+        self.data = self.data.to_crs(crs=self.target_crs)
 
     def populate_classification_table(self):
         """Populate the classification table with unique landslide

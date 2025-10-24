@@ -3,7 +3,6 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
-from db.constants import AUSTRIA, TARGET_CRS
 from db.processors.base import BaseProcessor
 
 
@@ -15,7 +14,7 @@ class Nasa(BaseProcessor):
         # Ensure that points are within Austria
         # CRS mis-match between the two files is handled internally by
         # geopandas
-        self.data = gpd.read_file(file_path, mask=AUSTRIA)
+        self.data = gpd.read_file(file_path, mask=self.austria)
 
     def clean(self):
         """Subset and clean the data"""
@@ -70,7 +69,7 @@ class Nasa(BaseProcessor):
         ).dt.date
 
         # Project to target CRS
-        self.data = self.data.to_crs(crs=TARGET_CRS)
+        self.data = self.data.to_crs(crs=self.target_crs)
 
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""

@@ -3,7 +3,6 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
-from db.constants import AUSTRIA, TARGET_CRS
 from db.processors.base import BaseProcessor
 
 
@@ -15,8 +14,8 @@ class WLV(BaseProcessor):
             file_path=file_path, dataset_name="Wildbach- und Lawinenverbauung"
         )
         # mask is not strictly necessary
-        self.data = gpd.read_file(file_path, mask=AUSTRIA).to_crs(
-            crs=TARGET_CRS
+        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
+            crs=self.target_crs
         )
 
     def clean(self):
