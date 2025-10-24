@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import geopandas as gpd
 import pandas as pd
 
 from db.models import Classification
@@ -13,11 +12,6 @@ class GeoSphere(BaseProcessor):
 
     def __init__(self, *, file_path: str | Path):
         super().__init__(file_path=file_path, dataset_name="GeoSphere")
-
-        # mask is not strictly necessary (left in for a unified approach)
-        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
-            self.target_crs
-        )
 
     def _check_geom(self):
         """Check if geometries are given."""

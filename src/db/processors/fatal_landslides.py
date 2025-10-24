@@ -15,12 +15,6 @@ class GlobalFatalLandslides(BaseProcessor):
         super().__init__(
             file_path=file_path, dataset_name="Global Fatal Landslides"
         )
-        # Ensure that points are within Austria
-        # CRS mis-match between the two files is handled internally by
-        # geopandas
-        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
-            crs=self.target_crs
-        )
 
     def subset(self):
         """Subset the data"""

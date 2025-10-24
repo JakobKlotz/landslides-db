@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import geopandas as gpd
 import pandas as pd
 
 from db.processors.base import BaseProcessor
@@ -11,12 +10,6 @@ class Nasa(BaseProcessor):
 
     def __init__(self, *, file_path: str | Path):
         super().__init__(file_path=file_path, dataset_name="NASA COOLR")
-        # Ensure that points are within Austria
-        # CRS mis-match between the two files is handled internally by
-        # geopandas
-        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
-            self.target_crs
-        )
 
     def clean(self):
         """Subset and clean the data"""

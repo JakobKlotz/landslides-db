@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import geopandas as gpd
 import pandas as pd
 
 from db.processors.base import BaseProcessor
@@ -12,10 +11,6 @@ class WLV(BaseProcessor):
     def __init__(self, *, file_path: str | Path):
         super().__init__(
             file_path=file_path, dataset_name="Wildbach- und Lawinenverbauung"
-        )
-        # mask is not strictly necessary (left in for a unified approach)
-        self.data = gpd.read_file(file_path, mask=self.austria).to_crs(
-            crs=self.target_crs
         )
 
     def clean(self):

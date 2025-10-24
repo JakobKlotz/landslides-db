@@ -24,8 +24,16 @@ class BaseProcessor(ABC):
         self.austria = AUSTRIA
         self.file_path = file_path
         self.dataset_name = dataset_name
-        self.data: gpd.GeoDataFrame | None = None
+        self.data = self.read_file()
         self.metadata = read_metadata(file_path=self.file_path)
+
+    def read_file(self) -> gpd.GeoDataFrame:
+        # Ensure that points are within Austria
+        # CRS mis-match between the two files is handled internally by
+        # geopandas
+        return gpd.read_file(self.file_path, mask=self.austria).to_crs(
+            crs=self.target_crs
+        )
 
     @abstractmethod
     def run(self):
