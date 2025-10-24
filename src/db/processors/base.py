@@ -5,10 +5,10 @@ from pathlib import Path
 import geopandas as gpd
 from sqlalchemy.dialects.postgresql import insert
 
-from src.constants import TARGET_CRS
-from src.duplicates import is_duplicated
-from src.models import Classification, Landslides
-from src.utils import (
+from db.constants import TARGET_CRS
+from db.duplicates import is_duplicated
+from db.models import Classification, Landslides
+from db.utils import (
     create_db_session,
     create_source_from_metadata,
     dump_gpkg,

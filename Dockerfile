@@ -12,12 +12,14 @@ ENV UV_PYTHON_INSTALL_DIR=/python
 ENV UV_PYTHON_PREFERENCE=only-managed
 
 WORKDIR /app
+
+COPY src/ /app/
+COPY pyproject.toml uv.lock .python-version /app/
+
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-install-project --no-dev
-
-COPY pyproject.toml uv.lock .python-version /app/
+    uv sync --locked --no-dev
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
