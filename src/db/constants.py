@@ -5,7 +5,7 @@ from pathlib import Path
 import geopandas as gpd
 
 TARGET_CRS = 32632
-TARGET_CRS_SRS = "EPSG:32632"
+TARGET_CRS_SRS = f"EPSG:{TARGET_CRS}"
 
 
 def _read_austrian_border(
