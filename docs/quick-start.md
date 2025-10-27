@@ -2,9 +2,10 @@
 outline: deep
 ---
 
-# Landslide DB Setup
+# Setup
 
-Instructions to set up the PostGIS data base with Docker.
+Follow these couple of steps to spin up your own PostGIS instance of the 
+landslides data base using Docker.
 
 ## Prerequisites
 
@@ -95,3 +96,13 @@ docker compose up -d api
 Navigate to [http://localhost:7800](http://localhost:7800) to preview
 the endpoints. `public.landslides_view` provides a comprehensive view of the
 landslide data including sources and classifications.
+
+<div style="text-align:center">
+  <img
+    src="./api-preview.png" alt="Landslides View in the API preview"
+    loading="lazy" width="100%" style="border-radius: 10px;"
+  >
+  <figcaption>
+    Preview of the data using the APIs interactive viewer
+  </figcaption>
+</div>
