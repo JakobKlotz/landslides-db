@@ -20,7 +20,7 @@ provide a PostGIS database that can be easily setup using Docker.
 > This project is under active development. The database schema and its records
 > are subject to change.
 
-> [!INFO]
+> [!TIP]
 > For quick access without setting up the data base, a GeoPackage dump is 
 > available. It contains a single table of the events and is located in the
 > [`db-dump/`](./db-dump/) directory.
