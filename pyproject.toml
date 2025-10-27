@@ -15,6 +15,7 @@ dependencies = [
     "psycopg[binary]>=3.2.10",
     "python-dotenv>=1.1.1",
     "sqlalchemy>=2.0.43",
+    "typer>=0.20.0",
 ]
 
 [dependency-groups]
