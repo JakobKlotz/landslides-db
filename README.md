@@ -4,7 +4,7 @@
 ![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg?style=for-the-badge)
 
 <div align="center">
-  <img src="./assets/header.png" alt="Header" width="700"/>
+  <img src="./docs/public/header.png" alt="Header" width="700"/>
 </div>
 
 # Austrian Landslide Inventory
