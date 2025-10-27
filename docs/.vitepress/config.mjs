@@ -4,6 +4,14 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Austrian Landslide Inventory",
   description: "Documentation",
+  head: [
+    [
+      'link', { 
+        rel: 'icon', type: 'image/png',
+        href: '/icons/favicon.png' 
+      }
+    ]
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

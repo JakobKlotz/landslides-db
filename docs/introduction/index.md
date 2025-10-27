@@ -83,3 +83,9 @@ data provenance and proper attribution.
 
 We are continuously working on adding more data sources to enhance the 
 comprehensiveness of the inventory.
+
+## Attributions
+
+Website icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+This project is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
