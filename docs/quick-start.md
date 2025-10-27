@@ -17,11 +17,14 @@ Two more tools are required to follow the steps below:
 
 Install both to proceed.
 
-> [!NOTE]
-> Since this project is dependent on larger files to fill the data base, git 
-> LFS is required to pull these files from the repository. After installation,
-> be sure to run `git lfs install` once. A `git clone` of the repository will
-> then pull the required files automatically.
+::: info
+
+Since this project is dependent on larger files to fill the data base, git 
+LFS is required to pull these files from the repository. After installation,
+be sure to run `git lfs install` once. A `git clone` of the repository will
+then pull the required files automatically.
+
+:::
 
 ## Setup Steps
 
@@ -39,8 +42,11 @@ POSTGRES_PORT=5432
 POSTGRES_DB=landslides
 ```
 
-> [!IMPORTANT]
-> Be sure to change the `POSTGRES_PASSWORD` to a password of your choice!
+::: danger
+
+Be sure to change the `POSTGRES_PASSWORD` to a password of your choice!
+
+:::
 
 The data base will be created with the details provided in your `.env` file.
 
