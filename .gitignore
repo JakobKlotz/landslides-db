@@ -124,3 +124,8 @@ queries/
 
 # supplementary files
 supplements/
+
+# docs
+node_modules/
+docs/.vitepress/cache
+docs/.vitepress/dist
