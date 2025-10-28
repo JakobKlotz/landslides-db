@@ -103,7 +103,7 @@ Navigate to [http://localhost:7800](http://localhost:7800) to preview
 the endpoints. `public.landslides_view` provides a comprehensive view of the
 landslide data including sources and classifications.
 
-<div style="text-align:center">
+<figure>
   <img
     src="./api-preview.png" alt="Landslides View in the API preview"
     loading="lazy" width="100%" style="border-radius: 10px;"
@@ -111,4 +111,4 @@ landslide data including sources and classifications.
   <figcaption>
     Preview of the data using the APIs interactive viewer
   </figcaption>
-</div>
+</figure>
