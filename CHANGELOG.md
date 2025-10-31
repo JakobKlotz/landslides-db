@@ -6,6 +6,12 @@
 available in [`db-dump/`](./db-dump)
 - Individual processed source files are now stored in a new 
 `data/processed-layers` directory to avoid confusion with the main dump.
+- Added a documentation site with:
+    - About: project overview and goals
+    - Quick Start: step-by-step usage guide
+    - Configuration: options and examples (coming soon)
+
+Provides a single, user-friendly reference to replace the README files.
 
 ### 🛠 Dev changes
 
