@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: "/landslides-db/",   // repo name see https://vitepress.dev/guide/deploy#setting-a-public-base-path
   title: "Austrian Landslide Inventory",
   description: "Documentation",
   head: [
