@@ -99,13 +99,13 @@ To start the service, run:
 docker compose up -d api
 ```
 
-Navigate to [http://localhost:7800](http://localhost:7800) to preview
-the endpoints. `public.landslides_view` provides a comprehensive view of the
-landslide data including sources and classifications.
+Navigate to `http://localhost:7800` to preview the endpoints. 
+`public.landslides_view` provides a comprehensive view of the landslide data
+including sources and classifications.
 
 <figure>
   <img
-    src="./api-preview.png" alt="Landslides View in the API preview"
+    src="/api-preview.png" alt="Landslides View in the API preview"
     loading="lazy" width="100%" style="border-radius: 10px;"
   >
   <figcaption>
