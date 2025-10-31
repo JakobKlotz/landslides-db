@@ -1,10 +1,8 @@
 from pathlib import Path
 
-import geopandas as gpd
 import pandas as pd
 
-from src.constants import AUSTRIA, TARGET_CRS
-from src.processors.base import BaseProcessor
+from db.processors.base import BaseProcessor
 
 
 class Nasa(BaseProcessor):
@@ -12,10 +10,6 @@ class Nasa(BaseProcessor):
 
     def __init__(self, *, file_path: str | Path):
         super().__init__(file_path=file_path, dataset_name="NASA COOLR")
-        # Ensure that points are within Austria
-        # CRS mis-match between the two files is handled internally by
-        # geopandas
-        self.data = gpd.read_file(file_path, mask=AUSTRIA)
 
     def clean(self):
         """Subset and clean the data"""
@@ -68,9 +62,6 @@ class Nasa(BaseProcessor):
         self.data["event_date"] = pd.to_datetime(
             self.data["event_date"]
         ).dt.date
-
-        # Project to target CRS
-        self.data = self.data.to_crs(crs=TARGET_CRS)
 
     def import_to_db(self, file_dump: str | None = None):
         """Import to PostGIS database."""
