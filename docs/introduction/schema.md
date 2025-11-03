@@ -142,3 +142,48 @@ LIMIT 2;
 | 2  | 2024-10-22 | SRID=32632;POINT(641802.697946 5196727.447737) |
 
 :::
+
+### classification
+
+This table stores the classification labels referenced by the `landslides`
+table (via `classification_id`). The available values are listed below:
+
+| name                                      |
+|-------------------------------------------|
+| rockfall                                  |
+| collapse, sinkhole                        |
+| mass movement (undefined type)            |
+| gravity slide or flow                     |
+| deep seated rock slope deformation        |
+
+Each record is classified into one of these categories. The categories itself
+were derived from the GeoSphere data set (see 
+[Data Sources](index.md#data-sources) for more info).
+
+::: details
+
+The corresponding query to the above table:
+
+```sql
+SELECT name
+FROM public.classification;
+```
+
+:::
+
+### sources
+
+The sources table stores metadata for each original data set referenced by 
+`landslides`. It captures provenance, access details and licensing to ensure 
+traceability and reproducibility. The `id` column is referenced by 
+`landslides.source_id`.
+
+| Field       | Nullable | Description                                             |
+|-------------|----------|---------------------------------------------------------|
+| name        | No       | Source name (data set title or institution)             |
+| downloaded  | No       | Date the data set was retrieved                         |
+| modified    | Yes      | Optional: last modified date from the provider          |
+| license     | No       | License type of the source                              |
+| url         | No       | Link to the original data set or metadata page          |
+| description | Yes      | Optional: Short, human‑readable summary of the data set |
+| doi         | Yes      | Optional: persistent identifier (DOI)                   |
