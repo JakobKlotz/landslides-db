@@ -1,5 +1,12 @@
 ## Version: `0.1.2`
 
+### 🌟 Features
+
+- Imported 7,070 additional events from the WLV dataset. Records in the WLV 
+    "water" category were reviewed and the subcategories "Murgang" and 
+    "Murartiger Feststofftransport" were mapped to the debris-flow class and 
+    imported accordingly. Thanks to @willevk!
+
 ### 🛠 Dev changes
 
 - Two additional workflows:
