@@ -1,0 +1,27 @@
+name: Check if VitePress page can be built
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - bun.lock
+      - package.json
+
+  # manually run the workflow as well    
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        # with:
+        #   fetch-depth: 0 # Not needed if lastUpdated is not enabled
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun install
+      - name: Build with VitePress
+        run: bun run docs:build
