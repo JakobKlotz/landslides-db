@@ -32,11 +32,11 @@ class WLV(BaseProcessor):
 
     def _filter_debris_flows(self):
         """Get all debris flows within the Water ('Wasser') category."""
-        debris_flows = self.data[self.data["category"] == "Wasser"]
+        debris_flows = self.data[self.data["category"] == "Wasser"].copy()
 
         # filter by subcategories Murgang & Murartiger Feststofftransport
-        debris_flows["subcategory"] = (
-            self.data["nameOfEvent"]
+        debris_flows.loc[:, "subcategory"] = (
+            debris_flows["nameOfEvent"]
             .str.partition("-")[0]
             .str.partition(":")[2]
             .str.strip()
