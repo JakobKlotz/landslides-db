@@ -63,8 +63,9 @@ linked to an SRID. The spatial_ref_sys table is used to interpret that SRID.
 ### landslides
 
 The landslides table contains the mass movement events, including a event date
-(`date`) and point geometry (`geom`). All records are linked to source and classification via the
-`source_id` and `classification_id` respectively. Find the first two records below:
+(`date`) and point geometry (`geom`). All records are linked to source and 
+classification via the `source_id` and `classification_id` respectively. Find 
+the first two records below:
 
 | id | date       | geom              | source_id | report | report_source | report_url | classification_id |
 |----|------------|-------------------|-----------|--------|---------------|------------|-------------------|
@@ -91,12 +92,53 @@ for an overview.
 | Field             | Nullable | Description                                          |
 |-------------------|----------|------------------------------------------------------|
 | date              | No       | Event date                                           |
-| geom              | No       | Point geometry                                       |
+| geom              | No       | Point geometry in **EPSG:32632**                     |
 | source_id         | No       | Foreign key to the `sources` table                   |
 | report            | Yes      | Optional report describing the event                 |
 | report_source     | Yes      | Optional name of the report source                   |
 | report_url        | Yes      | Optional URL linking to the original report/resource |
 | classification_id | No       | Foreign key to the `classification` table            |
 
-In short, `date`, `geom` and `source_id` and `classification_id` are always present which
-allows for a unique assignment of events.
+::: info
+
+Geometries are all in [EPSG:32632](https://epsg.io/32632)!
+
+:::
+
+In short, `date`, `geom` and `source_id` and `classification_id` are always
+present.
+
+::: info
+
+By default, the point geometry `geom` is returned as hex-encoded binary.
+To get the geometry as string, use the `ST_AsText` function. For example:
+
+```sql
+SELECT id, date, ST_AsText(geom) AS wkt
+FROM public.landslides
+LIMIT 2;
+```
+
+| id | date       | wkt                                 |
+|----|------------|-------------------------------------|
+| 1  | 2024-11-01 | POINT(748676.21304 5272749.179051)  |
+| 2  | 2024-10-22 | POINT(641802.697946 5196727.447737) |
+
+:::
+
+::: tip
+
+With the `ST_AsEWKT` function, the SRID can be included as well.
+
+```sql
+SELECT id, ST_AsEWKT(geom) AS ewkt
+FROM public.landslides
+LIMIT 2;
+```
+
+| id | date       | wkt                                            |
+|----|------------|------------------------------------------------|
+| 1  | 2024-11-01 | SRID=32632;POINT(748676.21304 5272749.179051)  |
+| 2  | 2024-10-22 | SRID=32632;POINT(641802.697946 5196727.447737) |
+
+:::
