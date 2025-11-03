@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import footnote from 'markdown-it-footnote'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -43,5 +44,10 @@ export default defineConfig({
       message: 'Licensed under CC BY-SA 4.0',
       copyright: 'Jakob Klotz'
     },
+  },
+  markdown: {
+    config: (md) => {
+      md.use(footnote)
+    }
   }
 })
