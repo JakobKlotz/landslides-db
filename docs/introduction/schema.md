@@ -1,0 +1,102 @@
+---
+outline: deep
+---
+
+# Schema
+
+To work with the data base, it helps to understand its public schema. The 
+`landslides` data base follows a simple, well‑structured layout. A screenshot
+is shown below: 
+
+<figure>
+  <img
+    src="/schema.png" alt="Landslides View in the API preview"
+    loading="lazy" width="100%" style="border-radius: 10px;"
+  >
+  <figcaption>
+    The data base schema.
+  </figcaption>
+</figure>
+
+Each table is described in detail below.
+
+## Table Description
+
+Let's break down each table and have a closer look.
+
+| Table             | Description                                                                      |
+|-------------------|----------------------------------------------------------------------------------|
+| `alembic_version` | Single row containing the Alembic migration version.                             |
+| `spatial_ref_sys` | Coordinate reference systems (CRS) available.                                    |
+| `landslides`      | Event records (e.g., rockfalls, debris flows, ...) with date and point geometry. |
+| `classification`  | Lookup table with classification labels used by the `landslides` table.          |
+| `sources`         | Metadata about original data sources linked to event records.                    |
+
+
+### alembic_version
+
+Migration of the data base is done with the Python package 
+[`alembic`](https://alembic.sqlalchemy.org/en/latest/). "Alembic provides 
+for the creation, management, and invocation of change management scripts for a
+relational database, using SQLAlchemy as the underlying engine."[^1]
+
+[^1]: See the Alembic [tutorial](https://alembic.sqlalchemy.org/en/latest/tutorial.html#tutorial)
+
+The alembic_version table is automatically added by the tool, it serves as 
+information.
+
+::: info
+
+Alembic is used to auto-generate the schema from the models defined with
+`sqlalchemy`. The alembic migration scripts are in `alembic/versions/`.
+
+:::
+
+### spatial_ref_sys
+
+The spatial_ref_sys table is included in every PostGIS data base and stores
+coordinate reference system (CRS) definitions (SRID, proj4/WKT text). In 
+PostGIS each geometry is linked to an SRID. For example, the landslides table
+contains events including point geometries (longitude, latitude) that are 
+linked to an SRID. The spatial_ref_sys table is used to interpret that SRID.
+
+### landslides
+
+The landslides table contains the mass movement events, including a event date
+(`date`) and point geometry (`geom`). All records are linked to source and classification via the
+`source_id` and `classification_id` respectively. Find the first two records below:
+
+| id | date       | geom              | source_id | report | report_source | report_url | classification_id |
+|----|------------|-------------------|-----------|--------|---------------|------------|-------------------|
+| 1  | 2024-11-01 | 0101000020787F... | 1         | NULL   | NULL          | NULL       | 1                 |
+| 2  | 2024-10-22 | 0101000020787F... | 1         | NULL   | NULL          | NULL       | 1                 |
+
+::: details
+
+The SQL query for above table:
+
+```sql
+SELECT *
+FROM public.landslides
+LIMIT 2;
+```
+
+:::
+
+#### Column Overview
+
+Some fields are nullable whereas other must always be present, see below table
+for an overview.
+
+| Field             | Nullable | Description                                          |
+|-------------------|----------|------------------------------------------------------|
+| date              | No       | Event date                                           |
+| geom              | No       | Point geometry                                       |
+| source_id         | No       | Foreign key to the `sources` table                   |
+| report            | Yes      | Optional report describing the event                 |
+| report_source     | Yes      | Optional name of the report source                   |
+| report_url        | Yes      | Optional URL linking to the original report/resource |
+| classification_id | No       | Foreign key to the `classification` table            |
+
+In short, `date`, `geom` and `source_id` and `classification_id` are always present which
+allows for a unique assignment of events.

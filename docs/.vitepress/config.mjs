@@ -24,7 +24,8 @@ export default defineConfig({
       {
         text: 'Introduction',
         items: [
-          { text: 'About', link: 'introduction/index.md'}
+          { text: 'About', link: 'introduction/index.md' },
+          { text: 'Schema', link: 'introduction/schema.md' }
         ]
       },
       {
