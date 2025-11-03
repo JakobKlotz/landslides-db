@@ -1,3 +1,13 @@
+## Version: `0.1.2`
+
+### 🛠 Dev changes
+
+- Two additional workflows:
+    - `build.yml`: Checks if the VitePress page can be built. Aims to prevent 
+    merges into main with a broken documentation site.
+    - `ruff.yml`: Runs the `ruff` linter and formatter (without fixing them)
+    to prevent pushing code that does not fulfill the enabled `ruff` rules.
+
 ## Version: `0.1.1`
 
 ### 🌟 Features
