@@ -187,3 +187,35 @@ traceability and reproducibility. The `id` column is referenced by
 | url         | No       | Link to the original data set or metadata page          |
 | description | Yes      | Optional: Short, human‑readable summary of the data set |
 | doi         | Yes      | Optional: persistent identifier (DOI)                   |
+
+## Views
+
+### landslides_view
+
+For convenience, a view, called `landslides_view`, is available that 
+*encompasses information from all three tables* (`landslides`, 
+`classification`, `sources`). The view provides information on all mass 
+movement phenomena in the data base including their source information and 
+classification.
+
+::: tip
+
+If you are looking for an entry point to the data base, use this view.
+
+Retrieve everything with:
+
+```sql
+SELECT *
+FROM landslides_view;
+```
+
+:::
+
+::: info
+
+As an optional (Docker) service a API is provided which could serve as an entry
+point for further applications. The API serves data from this 
+`landslides_view`. See the [Quick Start](../quick-start.md#optional-api) 
+section for more details.
+
+:::
