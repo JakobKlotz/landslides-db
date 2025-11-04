@@ -30,7 +30,11 @@ provide a PostGIS database that can be easily setup using Docker.
 To get your own instance of the database up and running, please follow the 
 setup instructions which use Docker for easy deployment.
 
-Please refer to the [**Database Setup Guide**](./alembic/README.md).
+Please refer to the [**Quick Start Guide**](https://docs.geohub.at/quick-start.html).
+
+## Help
+
+Documentation is available at [docs.geohub.at](https://docs.geohub.at).
 
 ## Data Sources
 

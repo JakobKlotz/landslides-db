@@ -6,6 +6,8 @@
     "water" category were reviewed and the subcategories "Murgang" and 
     "Murartiger Feststofftransport" were mapped to the debris-flow class and 
     imported accordingly. Thanks to @willevk!
+- Detailed description of the data base schema and its tables including 
+    examples. All housed in the documentation's schema section.
 
 ### 🛠 Dev changes
 

@@ -112,3 +112,8 @@ including sources and classifications.
     Preview of the data using the APIs interactive viewer
   </figcaption>
 </figure>
+
+## Persistence
+
+By default, the data base is stored within the `db/` directory at the project's
+root. The directory is automatically created by the Docker db service. 
