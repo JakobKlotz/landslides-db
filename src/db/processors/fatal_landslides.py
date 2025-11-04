@@ -5,8 +5,7 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
 
-from src.constants import AUSTRIA, TARGET_CRS
-from src.processors.base import BaseProcessor
+from db.processors.base import BaseProcessor
 
 
 class GlobalFatalLandslides(BaseProcessor):
@@ -16,10 +15,6 @@ class GlobalFatalLandslides(BaseProcessor):
         super().__init__(
             file_path=file_path, dataset_name="Global Fatal Landslides"
         )
-        # Ensure that points are within Austria
-        # CRS mis-match between the two files is handled internally by
-        # geopandas
-        self.data = gpd.read_file(file_path, mask=AUSTRIA)
 
     def subset(self):
         """Subset the data"""
@@ -49,8 +44,6 @@ class GlobalFatalLandslides(BaseProcessor):
 
         # Remove Z coordinate from points
         self.data["geometry"] = self.data["geometry"].force_2d()
-        # Project to TARGET_CRS
-        self.data = self.data.to_crs(crs=TARGET_CRS)
 
         # Combination of date & geometry is unique
         # Those two events were rockfalls, see their description

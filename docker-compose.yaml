@@ -22,13 +22,15 @@ services:
     # override POSTGRES_HOST to point to the 'db' service in this compose file
     environment:
       - POSTGRES_HOST=db
-    command: bash -c "alembic upgrade head && python import.py"
+    
+    # set --dump-layers if individual processed source files should be written;
+    # files are written to `./data/processed-layers`
+    command: bash -c "alembic upgrade head && python scripts/import.py --no-dump-layers"
     volumes:
       - ./data:/app/data
-      - ./src:/app/src
       - ./alembic:/app/alembic
       - ./alembic.ini:/app/alembic.ini
-      - ./import.py:/app/import.py
+      - ./scripts:/app/scripts
 
     depends_on:
       db:

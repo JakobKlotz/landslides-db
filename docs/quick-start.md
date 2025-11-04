@@ -1,6 +1,11 @@
-# Landslide DB Setup
+---
+outline: deep
+---
 
-Instructions to set up the PostGIS data base with Docker.
+# Setup
+
+Follow these couple of steps to spin up your own PostGIS instance of the 
+landslides data base using Docker.
 
 ## Prerequisites
 
@@ -10,36 +15,42 @@ Two more tools are required to follow the steps below:
 - [Docker](https://www.docker.com)
 - [Git LFS](https://git-lfs.com/)
 
-Install both tools to proceed.
+Install both to proceed.
 
-> [!NOTE]
-> Since this project is dependent on larger files to fill the data base, git 
-> LFS is required to pull these files from the repository. After installation,
-> be sure to run `git lfs install` once. A `git clone` of the repository will
-> then pull the required files automatically.
+::: info
+
+Since this project is dependent on larger files to fill the data base, git 
+LFS is required to pull these files from the repository. After installation,
+be sure to run `git lfs install` once. A `git clone` of the repository will
+then pull the required files automatically.
+
+:::
 
 ## Setup Steps
 
-### 1️⃣ Env variables
+### Environment
 
 With the repository cloned, navigate to the project folder and set up the
 environment variables. To do so, create an `.env` file at the root of the 
 project with following content:
 
-```env
+```dotenv {2}
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=mysecretpassword  # TODO set a secure password!
+POSTGRES_PASSWORD=mysecretpassword
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 POSTGRES_DB=landslides
 ```
 
-> [!IMPORTANT]
-> Be sure to change the `POSTGRES_PASSWORD` to a password of your choice!
+::: danger
 
-The data base will be created with the details provided in the `.env` file.
+Be sure to change the `POSTGRES_PASSWORD` to a password of your choice!
 
-### 2️⃣ Build the images
+:::
+
+The data base will be created with the details provided in your `.env` file.
+
+### Build the images
 
 With Docker installed, we have to build the containers first:
 
@@ -47,7 +58,7 @@ With Docker installed, we have to build the containers first:
 docker compose build
 ```
 
-### 3️⃣ Initialize the database & Import data
+### Initialize the database & Import data
 
 Next up, we can initialize the data base with:
 
@@ -77,7 +88,7 @@ Upon completion, the `importer` service will exit automatically.
 You can now access the database at `localhost:5432` with a PostGIS enabled 
 client (e.g. [`pgAdmin`](https://www.pgadmin.org/)).
 
-### 4️⃣ [Optional] API
+### [Optional] API
 
 Using [`pg_tileserv`](https://github.com/CrunchyData/pg_tileserv), an API
 is provided to access the data. This service is optional, but could provide
@@ -88,6 +99,21 @@ To start the service, run:
 docker compose up -d api
 ```
 
-Navigate to [http://localhost:7800](http://localhost:7800) to preview
-the endpoints. `public.landslides_view` provides a comprehensive view of the
-landslide data including sources and classifications.
+Navigate to `http://localhost:7800` to preview the endpoints. 
+`public.landslides_view` provides a comprehensive view of the landslide data
+including sources and classifications.
+
+<figure>
+  <img
+    src="/api-preview.png" alt="Landslides View in the API preview"
+    loading="lazy" width="100%" style="border-radius: 10px;"
+  >
+  <figcaption>
+    Preview of the data using the APIs interactive viewer
+  </figcaption>
+</figure>
+
+## Persistence
+
+By default, the data base is stored within the `db/` directory at the project's
+root. The directory is automatically created by the Docker db service. 

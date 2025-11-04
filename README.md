@@ -4,7 +4,7 @@
 ![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg?style=for-the-badge)
 
 <div align="center">
-  <img src="./assets/header.png" alt="Header" width="700"/>
+  <img src="./docs/public/header.png" alt="Header" width="700"/>
 </div>
 
 # Austrian Landslide Inventory
@@ -20,12 +20,21 @@ provide a PostGIS database that can be easily setup using Docker.
 > This project is under active development. The database schema and its records
 > are subject to change.
 
+> [!TIP]
+> For quick access without setting up the data base, a GeoPackage dump is 
+> available. It contains a single table of the events and is located in the
+> [`db-dump/`](./db-dump/) directory.
+
 ## Getting Started
 
 To get your own instance of the database up and running, please follow the 
 setup instructions which use Docker for easy deployment.
 
-Please refer to the [**Database Setup Guide**](./alembic/README.md).
+Please refer to the [**Quick Start Guide**](https://docs.geohub.at/quick-start.html).
+
+## Help
+
+Documentation is available at [docs.geohub.at](https://docs.geohub.at).
 
 ## Data Sources
 
