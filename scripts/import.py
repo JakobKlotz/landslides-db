@@ -29,9 +29,9 @@ def import_data(dump_layers: bool = False):
         dump_layers (bool, optional): Dump each processed data source as an
             individual file. Defaults to False.
     """
-    for ProcClass, rel_path in processors:
+    for proc_class, rel_path in processors:
         in_path = in_base_path / rel_path
-        proc = ProcClass(file_path=in_path)
+        proc = proc_class(file_path=in_path)
 
         if dump_layers:
             out_path = out_base_path / rel_path
