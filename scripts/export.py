@@ -9,6 +9,9 @@ out_path = Path("./db-dump")
 out_path.mkdir(parents=True, exist_ok=True)
 out_file = out_path / "landslides-db.gpkg"
 
+# always remove file (overwriting a GeoPackage leads to issues!)
+out_file.unlink(missing_ok=True)
+
 Session = create_db_session()
 with Session() as session:
     landslide_view = gpd.read_postgis(

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import footnote from 'markdown-it-footnote'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -13,6 +14,9 @@ export default defineConfig({
     ]
   ],
   themeConfig: {
+    search: {
+      provider: 'local'
+    },
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
@@ -23,7 +27,8 @@ export default defineConfig({
       {
         text: 'Introduction',
         items: [
-          { text: 'About', link: 'introduction/index.md'}
+          { text: 'About', link: 'introduction/index.md' },
+          { text: 'Schema', link: 'introduction/schema.md' }
         ]
       },
       {
@@ -43,5 +48,10 @@ export default defineConfig({
       message: 'Licensed under CC BY-SA 4.0',
       copyright: 'Jakob Klotz'
     },
+  },
+  markdown: {
+    config: (md) => {
+      md.use(footnote)
+    }
   }
 })

@@ -1,3 +1,22 @@
+## Version: `0.1.2`
+
+### 🌟 Features
+
+- Imported 7,070 additional events from the WLV dataset. Records in the WLV 
+    "water" category were reviewed and the subcategories "Murgang" and 
+    "Murartiger Feststofftransport" were mapped to the debris-flow class and 
+    imported accordingly. Thanks to @willevk!
+- Detailed description of the data base schema and its tables including 
+    examples. All housed in the documentation's schema section.
+
+### 🛠 Dev changes
+
+- Two additional workflows:
+    - `build.yml`: Checks if the VitePress page can be built. Aims to prevent 
+    merges into main with a broken documentation site.
+    - `ruff.yml`: Runs the `ruff` linter and formatter (without fixing them)
+    to prevent pushing code that does not fulfill the enabled `ruff` rules.
+
 ## Version: `0.1.1`
 
 ### 🌟 Features
