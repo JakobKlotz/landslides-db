@@ -1,6 +1,9 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from db.utils import create_db_session
+import numpy as np
+import folium
+from folium.plugins import HeatMap
 
 
 Session = create_db_session()
@@ -70,3 +73,123 @@ plt.ylabel("Number of events")
 for i, value in enumerate(year_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=5, fontweight='bold')
 plt.show()
+
+
+## Pie chart of landslide classifications with percentage labels
+# Data
+classification_counts = landslide_view['classification_name'].value_counts()
+total = classification_counts.sum()
+
+# Compute explode values (optional)
+explode = [0.1 if (val / total) < 0.01 else 0 for val in classification_counts]
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Create pie chart (no labels, we’ll handle manually)
+wedges, texts, autotexts = ax.pie(
+    classification_counts,
+    labels=None,
+    autopct=lambda p: f'{p:.2f}%' if p >= 1 else '',  # show % inside only if >=1%
+    startangle=-20,
+    pctdistance=0.8,
+    explode=explode
+)
+
+# --- Leader line logic for <1% slices ---
+for i, (wedge, count) in enumerate(zip(wedges, classification_counts)):
+    percentage = count / total
+    if percentage < 0.01:  # Only for small slices (<1%)
+        # Compute the mid-angle of the slice
+        ang = (wedge.theta2 + wedge.theta1) / 2
+        # Convert angle to radians
+        ang_rad = np.deg2rad(ang)
+
+        # Get slice radius and center (accounting for explode)
+        center, r = wedge.center, wedge.r
+
+        # Slight angular offset to spread small slices apart visually
+        ang_offset = (-8 if i % 2 == 0 else 8)
+        ang_rad_shifted = np.deg2rad(ang + ang_offset)
+
+        # Start point: true edge of the slice
+        x_start = center[0] + r * np.cos(ang_rad)
+        y_start = center[1] + r * np.sin(ang_rad)
+
+        # End point: slightly angled outward
+        x_end = center[0] + 1.3 * r * np.cos(ang_rad_shifted)
+        y_end = center[1] + 1.3 * r * np.sin(ang_rad_shifted)
+
+        # Draw leader line
+        ax.plot([x_start, x_end], [y_start, y_end], color='gray', lw=0.8)
+
+        # Label placement
+        ax.text(x_end + (0.02 if np.cos(ang_rad_shifted) > 0 else -0.02),
+                y_end,
+                f"{classification_counts.index[i]}\n({percentage*100:.2f}%)",
+                ha='left' if np.cos(ang_rad_shifted) > 0 else 'right',
+                va='center',
+                fontsize=8)
+    else:
+        # Normal label for ≥1% slices
+        texts[i].set_text(f"{classification_counts.index[i]}")
+
+# --- Style inside percentage text ---
+for autotext in autotexts:
+    autotext.set_fontsize(8)
+    autotext.set_color('black')
+    autotext.set_weight('bold')
+
+ax.axis('equal')
+plt.title("Proportion of Landslide Classifications")
+plt.tight_layout()
+plt.show()
+
+
+## Plot the number of events per month in a bar plot with different colors for classifications
+fig, ax = plt.subplots(figsize=(12, 8))
+
+pivot = (
+    landslide_view
+    .groupby(['event_month', 'classification_name'])
+    .size()
+    .unstack(fill_value=0)
+    .sort_index()
+)
+
+pivot.plot(kind='bar', stacked=True, ax=ax, figsize=(12, 8), colormap='Set1')
+
+ax.set_title("Number of Events per Month by Classification")
+ax.set_xlabel("Month")
+ax.set_ylabel("Number of Events")
+ax.legend(title="Classification", bbox_to_anchor=(1.05, 1), loc='upper left')
+# 🔄 Rotate month numbers
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+
+
+## Create a heatmap of landslide density over Austria using Folium 
+# (double click on the html file outside of vscode to open)
+landslide_latlon = landslide_view.to_crs(epsg=4326)
+
+# --- Drop missing geometries ---
+landslide_latlon = landslide_latlon[landslide_latlon.geometry.notnull()]
+
+# --- Extract coordinates safely ---
+heat_data = [(geom.y, geom.x) for geom in landslide_latlon.geometry]
+
+# --- Create base map centered on Austria ---
+m = folium.Map(location=[47.5162, 14.5501], zoom_start=7, tiles='OpenStreetMap')
+
+# --- Add HeatMap layer ---
+HeatMap(
+    data=heat_data,
+    radius=10,       # controls spread of each point
+    blur=15,         # controls smoothness
+    max_zoom=8,
+    min_opacity=0.3
+).add_to(m)
+
+# --- Save and show ---
+m.save("austria_landslide_density.html")
+m
