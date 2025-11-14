@@ -1,9 +1,12 @@
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from db.utils import create_db_session
 import numpy as np
 import folium
 from folium.plugins import HeatMap
+from folium.plugins import TimestampedGeoJson
+import pandas as pd
 
 
 Session = create_db_session()
@@ -187,9 +190,129 @@ HeatMap(
     radius=10,       # controls spread of each point
     blur=15,         # controls smoothness
     max_zoom=8,
-    min_opacity=0.3
+    min_opacity=0.5
 ).add_to(m)
 
 # --- Save and show ---
 m.save("austria_landslide_density.html")
+m
+
+
+## Timeslider classification slider
+# -------------------------------------------------------
+# 1. PREPARE & CLEAN DATA
+# -------------------------------------------------------
+events = landslide_view.to_crs(epsg=4326).copy()
+
+# Drop invalid geometry
+events = events[events.geometry.notnull()]
+events = events[events.geometry.type == "Point"]
+
+# Fix date parsing
+events["event_date"] = pd.to_datetime(
+    events["event_date"],
+    errors="coerce",
+    infer_datetime_format=True
+)
+
+# Fix year-only strings (e.g., "1956")
+mask_year_only = events["event_date"].isna() & events["event_date"].astype(str).str.match(r"^\d{4}$")
+events.loc[mask_year_only, "event_date"] = pd.to_datetime(
+    events.loc[mask_year_only, "event_date"].astype(str) + "-01-01"
+)
+
+# Drop rows still missing dates
+events = events[events["event_date"].notnull()]
+
+# -----------------------------
+# Filter to 1970-2025
+# -----------------------------
+events = events[(events["event_date"].dt.year >= 1970) & 
+                (events["event_date"].dt.year <= 2025)]
+
+# Create timestamp string
+events["time"] = events["event_date"].dt.strftime("%Y-%m-%d")
+
+#print("Date range:", events["event_date"].min(), "→", events["event_date"].max())
+
+# -------------------------------------------------------
+# 2. CLASSIFICATION COLORS
+# -------------------------------------------------------
+classifications = events["classification_name"].unique()
+cmap = plt.get_cmap("Set1")
+colors = [mcolors.to_hex(cmap(i / (len(classifications)-1))) 
+          for i in range(len(classifications))]
+color_map = dict(zip(classifications, colors))
+
+# -------------------------------------------------------
+# 3. BUILD FEATURES
+# -------------------------------------------------------
+features = []
+
+for geom, date_string, cls in zip(
+    events.geometry,
+    events["time"],
+    events["classification_name"]
+):
+    lon, lat = geom.x, geom.y
+    color = color_map.get(cls, "#000000")
+
+    feature = {
+    "type": "Feature",
+    "geometry": {"type": "Point", "coordinates": [lon, lat]},
+    "properties": {
+        "time": date_string,
+        "popup": f"Classification: {cls}<br>Date: {date_string}",
+        "icon": "circle",
+        "iconstyle": {
+            "fillColor": color,
+            "fillOpacity": 0.8,
+            "stroke": False,   # <- remove outlines
+            "radius": 2,       # small dots
+        },
+    },
+}
+    features.append(feature)
+
+geojson_data = {"type": "FeatureCollection", "features": features}
+
+# -------------------------------------------------------
+# 4. FOLIUM MAP
+# -------------------------------------------------------
+m = folium.Map(location=[47.5162, 14.5501], zoom_start=7, tiles="CartoDB positron")
+
+TimestampedGeoJson(
+    data=geojson_data,
+    period="P1Y",
+    add_last_point=True,
+    auto_play=False,
+    loop=False,
+    max_speed=1,
+    loop_button=True,
+    date_options="YYYY-MM-DD",
+    time_slider_drag_update=True,
+).add_to(m)
+
+# -------------------------------------------------------
+# 5. LEGEND
+# -------------------------------------------------------
+legend_html = """
+<div style="
+     position: fixed; 
+     bottom: 50px; left: 50px;
+     width: 240px;
+     background-color: white; 
+     padding: 10px;
+     border:2px solid grey; 
+     z-index:9999;
+     font-size: 14px;">
+<b>Landslide Classifications</b><br>
+"""
+for cls in classifications:
+    legend_html += f"<i style='background:{color_map[cls]};width:12px;height:12px;display:inline-block;margin-right:6px;'></i>{cls}<br>"
+legend_html += "</div>"
+
+m.get_root().html.add_child(folium.Element(legend_html))
+
+m.save("austria_landslides_timeslider_points.html")
 m
