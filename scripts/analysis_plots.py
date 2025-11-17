@@ -7,6 +7,12 @@ import folium
 from folium.plugins import HeatMap
 from folium.plugins import TimestampedGeoJson
 import pandas as pd
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+PLOTS_DIR = BASE_DIR / "plots"
+PLOTS_DIR.mkdir(exist_ok=True)
+
 
 
 Session = create_db_session()
@@ -23,6 +29,7 @@ print(list(landslide_view.columns))
 fig, ax = plt.subplots(figsize=(10, 10))
 landslide_view.plot(ax=ax, column='classification_name', legend=True, markersize=5, cmap='Set1', alpha=0.8)
 plt.title("Landslide Classifications")
+fig.savefig(PLOTS_DIR / "classification_map.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
