@@ -159,6 +159,7 @@ for autotext in autotexts:
 ax.axis('equal')
 plt.title("Proportion of Landslide Classifications")
 plt.tight_layout()
+fig.savefig(PLOTS_DIR / "classification_piechart.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
