@@ -66,6 +66,8 @@ plt.ylabel("Number of events")
 for i, value in enumerate(month_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=8, fontweight='bold')
 
+fig = ax.figure
+fig.savefig(PLOTS_DIR / "events_per_month.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -86,7 +88,7 @@ for i, value in enumerate(year_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=5, fontweight='bold')
 
 fig = ax.figure
-fig.savefig(PLOTS_DIR / "events_per_month.png", dpi=300, bbox_inches="tight")
+fig.savefig(PLOTS_DIR / "events_per_year.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
