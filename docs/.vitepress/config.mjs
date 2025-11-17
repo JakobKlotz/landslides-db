@@ -9,12 +9,12 @@ export default defineConfig({
     [
       'link', { 
         rel: 'icon', type: 'image/ico',
-        href: '/icons/favicon.ico' 
+        href: '/favicon.ico' 
       }
     ]
   ],
   themeConfig: {
-    logo: "/icons/favicon.ico",
+    logo: "/favicon.ico",
     search: {
       provider: 'local'
     },
