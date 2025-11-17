@@ -11,10 +11,10 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /quick-start
+      link: /guide/quick-start
     - theme: alt
       text: About
-      link: /introduction/index
+      link: /intro/about
 
 features:
 

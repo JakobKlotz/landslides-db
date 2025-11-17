@@ -20,23 +20,23 @@ export default defineConfig({
     },
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Guide', link: '/quick-start' }
+      { text: 'Introduction', link: '/intro/about' },
+      { text: 'Guide', link: '/guide/quick-start' }
     ],
 
     sidebar: [
       {
         text: 'Introduction',
         items: [
-          { text: 'About', link: 'introduction/index.md' },
-          { text: 'Schema', link: 'introduction/schema.md' }
+          { text: 'About', link: '/intro/about' },
+          { text: 'Schema', link: '/intro/schema' }
         ]
       },
       {
         text: 'Guide',
         items: [
-          { text: 'Quick Start', link: '/quick-start' },
-          { text: 'Configuration', link: '/config' }
+          { text: 'Quick Start', link: '/guide/quick-start' },
+          { text: 'Configuration', link: '/guide/config' }
         ]
       }
     ],
