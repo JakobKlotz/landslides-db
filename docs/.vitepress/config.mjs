@@ -8,12 +8,13 @@ export default defineConfig({
   head: [
     [
       'link', { 
-        rel: 'icon', type: 'image/png',
-        href: '/icons/favicon.png' 
+        rel: 'icon', type: 'image/ico',
+        href: '/icons/favicon.ico' 
       }
     ]
   ],
   themeConfig: {
+    logo: "/icons/favicon.ico",
     search: {
       provider: 'local'
     },
