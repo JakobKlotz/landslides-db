@@ -84,6 +84,9 @@ plt.ylabel("Number of events")
 # Add counts on top of bars
 for i, value in enumerate(year_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=5, fontweight='bold')
+
+fig = ax.figure
+fig.savefig(PLOTS_DIR / "events_per_month.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
