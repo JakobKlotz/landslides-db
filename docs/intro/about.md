@@ -41,7 +41,7 @@ exploratory analysis, statistical modeling and the development of new methods.
   event date.
 - **Provenance:** Each record links back to its original source, ensuring 
   traceability and proper attribution.
-- **Two data format:** The data is provided as a ready-to-use GeoPackage for 
+- **Two data formats:** The data is provided as a ready-to-use GeoPackage for 
   quick exploration and a PostGIS data base for reproducible ingestion and 
   advanced workflows.
 - **Quick Start:** This project serves as a practical resource for researchers

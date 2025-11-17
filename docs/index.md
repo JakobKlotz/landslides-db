@@ -9,11 +9,11 @@ hero:
     "header.png"
   actions:
     - theme: brand
-      text: Get Started
-      link: /guide/quick-start
-    - theme: alt
       text: About
       link: /intro/about
+    - theme: alt
+      text: Quick-Start
+      link: /guide/quick-start
 
 features:
 
