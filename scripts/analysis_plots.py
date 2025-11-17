@@ -183,6 +183,7 @@ ax.legend(title="Classification", bbox_to_anchor=(1.05, 1), loc='upper left')
 # 🔄 Rotate month numbers
 plt.xticks(rotation=0)
 plt.tight_layout()
+fig.savefig(PLOTS_DIR / "events_per_month_by_classification.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
