@@ -46,6 +46,8 @@ plt.ylabel("Number of events")
 for i, value in enumerate(classification_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=8, fontweight='bold')
 
+fig = ax.figure
+fig.savefig(PLOTS_DIR / "classification_counts.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
