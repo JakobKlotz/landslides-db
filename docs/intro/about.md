@@ -5,8 +5,8 @@ outline: deep
 # About
 
 This project builds a reproducible, harmonized inventory for mass movement data
-in Austria. By curating multiple open data sets, a single PostGIS data base 
-is provided.
+in Austria. By curating multiple open data sets, a single PostGIS data base is
+provided.
 
 ::: warning
 
@@ -15,23 +15,58 @@ are subject to change.
 
 :::
 
-## Why?
+## Project Goal
 
-Several institutes, regional authorities and researchers maintain data 
-collections, but they live in different silos and formats. This project aims 
-to collect these sources, harmonize it and publish the data for the research 
-community to use.
+Austria has various data sets on mass movements, but they are often maintained
+in different formats and silos by various institutes and regional authorities.
+This fragmentation makes comprehensive, large-scale analysis difficult.
 
-By providing a single, reproducible database, we enable:
+This project aims to solve that problem by providing a single, harmonized and 
+reproducible data base of mass movement events in Austria, specifically for 
+the research community.
 
-- Easy access to comprehensive mass movement data
-- Standardized data formats and classifications
-- Clear data provenance and attribution
-- A foundation for research and analysis
+## Scope & Limitations
+
+This data set is a research-oriented tool. It is designed to support 
+exploratory analysis, statistical modeling and the development of new methods.
+
+### What to Expect
+
+- **Harmonized data:** Historic mass movement events aggregated from multiple 
+  public sources.
+- **Attributes:** Records include event date, harmonized event classifications
+  and point geometry. Where available, metadata is provided.
+- **Duplicate handling**: To reduce redundancy across sources, an automated 
+  process identifies potential duplicates using a 500-meter radius and same-day
+  event date.
+- **Provenance:** Each record links back to its original source, ensuring 
+  traceability and proper attribution.
+- **Two data format:** The data is provided as a ready-to-use GeoPackage for 
+  quick exploration and a PostGIS data base for reproducible ingestion and 
+  advanced workflows.
+- **Quick Start:** This project serves as a practical resource for researchers
+  who need a consolidated data set for analysis, modeling or method testing.
+
+### Important Limitations
+
+- **Not comprehensive:** Events can be missing! This inventory is a best-effort
+  aggregation of known public data sources and most likely will never be 
+  exhaustive. 
+- **Not error-free:** This inventory inherits all inconsistencies, inaccuracies
+  and omissions from its sources. Be aware, that data quality can verify.
+- **Positional uncertainty:** Point geometries can be imprecise. Positional 
+  uncertainty is generally not reported by the sources and can not be reliably 
+  estimated. Do not use for high-accuracy applications.
+- **Imperfect duplicate detection:** The automated check helps reduce 
+  redundancy but is not exhaustive. Some duplicates may remain, especially 
+  considering imprecision regarding point geometries.
+- **Not for real-time use:** Updates depend on upstream sources. Data refreshes
+  are irregular and not guaranteed, new event data can lag or be incomplete.
+  Check the source metadata for recency.
 
 ## Data Coverage
 
-The database encompasses different mass movement phenomena, including:
+The data base encompasses different mass movement phenomena, including:
 
 - Gravity slide or flow
 - Rockfall
@@ -43,7 +78,7 @@ The database encompasses different mass movement phenomena, including:
 
 ### Quick Access (GeoPackage)
 
-For users who want to quickly explore the data without setting up a database, 
+For users who want to quickly explore the data without setting up a data base,
 we provide a ready-to-use GeoPackage file. This is ideal for:
 
 - Quick data exploration and visualization
@@ -52,19 +87,20 @@ we provide a ready-to-use GeoPackage file. This is ideal for:
 
 ::: tip
 
-The GeoPackage dump contains a single table with all events and is located 
-in the repository's [`db-dump/`](https://github.com/JakobKlotz/landslides-db/tree/main/db-dump) 
+The GeoPackage dump contains a single table with all events and is located in
+the repository's
+[`db-dump/`](https://github.com/JakobKlotz/landslides-db/tree/main/db-dump)
 directory. Simply download and open it in your favorite GIS application.
 
 :::
 
-### PostGIS Database Setup
+### PostGIS Setup
 
-For a proper workflow with reproducible data pipelines, advanced querying and 
-integration into existing infrastructure, we recommend deploying the full 
-PostGIS database using Docker.
+For a proper workflow with reproducible data pipelines, advanced querying and
+integration into existing infrastructure, we recommend deploying the full
+PostGIS data base using Docker.
 
-To set up the database, please refer to the 
+To set up the data base, please refer to the
 [Quick Start Guide](../quick-start.md).
 
 ## Data Sources
@@ -78,14 +114,17 @@ The inventory incorporates data from the following sources:
 | [NASA COOLR](https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521)                 |     Custom License (provided in the repo)     |
 | [WLV](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527) |     [No Limitations](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527)      |
 
-Each record in the database is linked to its original source to ensure clear
+Each record in the data base is linked to its original source to ensure clear
 data provenance and proper attribution.
 
-We are continuously working on adding more data sources to enhance the 
+We are continuously working on adding more data sources to enhance the
 comprehensiveness of the inventory.
 
 ## Attributions
 
 Website icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
-This project is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+## License
+
+This project is licensed under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
