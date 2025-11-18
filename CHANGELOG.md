@@ -1,3 +1,14 @@
+## Version: `0.1.3`
+
+### 🌟 Features
+
+- The data base (`db` Docker service) now restarts by default.
+
+### 🐞 Fixes
+
+- The WLV DOI was previously stored as an empty string; it is now saved as 
+    null.
+
 ## Version: `0.1.2`
 
 ### 🌟 Features

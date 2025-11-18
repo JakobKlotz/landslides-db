@@ -1,6 +1,7 @@
 services:
   db:
     image: postgis/postgis:18-3.6
+    restart: unless-stopped
     env_file: .env
     volumes:
       - ./db:/var/lib/postgresql
