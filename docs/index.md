@@ -5,8 +5,6 @@ layout: home
 hero:
   name: "oCoMMA"
   tagline: "open Collection of Mass Movements in Austria"
-  image:
-    "header.png"
   actions:
     - theme: brand
       text: About
