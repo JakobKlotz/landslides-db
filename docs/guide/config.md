@@ -38,3 +38,29 @@ def is_duplicated(  # [!code focus]
 ```
 
 After applying the changes, simply follow the [quick start guide](quick-start).
+
+## PostGIS port
+
+By default, the PostGIS data base is exposed on port `5432`. To change the port
+navigate to the `.env` file and simply change the `POSTGRES_PORT` variable.
+This example, changes the port from the default `5432` to `5173`.
+
+```dotenv
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=mysecretpassword
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432  # [!code --] [!code focus]
+POSTGRES_PORT=5173  # [!code ++] [!code focus]
+POSTGRES_DB=landslides
+```
+
+::: info
+
+`docker-compose.yaml` will pick up the new `POSTGRES_PORT` variable. Be sure, 
+to restart the `db` and `api` service!
+
+```bash
+docker compose restart db api
+```
+
+:::
