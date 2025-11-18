@@ -1,3 +1,18 @@
+## Version: `0.1.3`
+
+### 🌟 Features
+
+- Improvements to the documentation with an added section on 
+    "Scope & Limitations" to clarify the expectations for this project.
+
+### 🛠 Dev changes
+
+- Documentation:
+    - Fixed the prev / next links (a missing leading slash for the file paths
+    led to issues).
+    - Adjusted the folder structure to the defined sidebar (in `config.mjs`).
+    - Used the latest stable `vitepress` version.
+
 ## Version: `0.1.2`
 
 ### 🌟 Features
