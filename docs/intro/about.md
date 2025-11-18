@@ -46,6 +46,9 @@ exploratory analysis, statistical modeling and the development of new methods.
   advanced workflows.
 - **Quick Start:** This project serves as a practical resource for researchers
   who need a consolidated data set for analysis, modeling or method testing.
+- **Transparency:** Due to the open-source nature of the project, code for data
+  ingestion, harmonization and de-duplication is comprehensible and documented 
+  which enables inspection, reproducibility and reuse.
 
 ### Important Limitations
 
