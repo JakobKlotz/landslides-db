@@ -2,8 +2,11 @@
 
 ### 🌟 Features
 
-- Improvements to the documentation with an added section on 
-    "Scope & Limitations" to clarify the expectations for this project.
+- Improvements to the documentation:
+    - Section on "Scope & Limitations" to clarify the expectations for this 
+        project.
+    - Guide to configure the radius during the de-duplication check and how to
+        change the default PostGIS port.
 
 ### 🛠 Dev changes
 
