@@ -7,6 +7,7 @@
         project.
     - Guide to configure the radius during the de-duplication check and how to
         change the default PostGIS port.
+- The data base (`db` Docker service) now restarts by default.
 
 ### 🛠 Dev changes
 
@@ -15,6 +16,11 @@
     led to issues).
     - Adjusted the folder structure to the defined sidebar (in `config.mjs`).
     - Used the latest stable `vitepress` version.
+
+### 🐞 Fixes
+
+- The WLV DOI was previously stored as an empty string; it is now saved as 
+    null.
 
 ## Version: `0.1.2`
 
