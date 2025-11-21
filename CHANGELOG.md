@@ -2,7 +2,20 @@
 
 ### 🌟 Features
 
+- Improvements to the documentation:
+    - Section on "Scope & Limitations" to clarify the expectations for this 
+        project.
+    - Guide to configure the radius during the de-duplication check and how to
+        change the default PostGIS port.
 - The data base (`db` Docker service) now restarts by default.
+
+### 🛠 Dev changes
+
+- Documentation:
+    - Fixed the prev / next links (a missing leading slash for the file paths
+    led to issues).
+    - Adjusted the folder structure to the defined sidebar (in `config.mjs`).
+    - Used the latest stable `vitepress` version.
 
 ### 🐞 Fixes
 
