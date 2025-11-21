@@ -158,7 +158,7 @@ table (via `classification_id`). The available values are listed below:
 
 Each record is classified into one of these categories. The categories itself
 were derived from the GeoSphere data set (see 
-[Data Sources](index.md#data-sources) for more info).
+[Data Sources](../index#data-sources) for more info).
 
 ::: details
 
@@ -215,7 +215,7 @@ FROM landslides_view;
 
 As an optional (Docker) service a API is provided which could serve as an entry
 point for further applications. The API serves data from this 
-`landslides_view`. See the [Quick Start](../quick-start.md#optional-api) 
+`landslides_view`. See the [Quick Start](../guide/quick-start.md#optional-api) 
 section for more details.
 
 :::

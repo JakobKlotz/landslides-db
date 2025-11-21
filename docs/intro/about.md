@@ -104,7 +104,7 @@ integration into existing infrastructure, we recommend deploying the full
 PostGIS data base using Docker.
 
 To set up the data base, please refer to the
-[Quick Start Guide](../quick-start.md).
+[Quick Start Guide](../guide/quick-start).
 
 ## Data Sources
 
