@@ -3,39 +3,40 @@ import footnote from 'markdown-it-footnote'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "Austrian Landslide Inventory",
+  title: "oCoMMA",
   description: "Documentation",
   head: [
     [
       'link', { 
-        rel: 'icon', type: 'image/png',
-        href: '/icons/favicon.png' 
+        rel: 'icon', type: 'image/ico',
+        href: '/favicon.ico' 
       }
     ]
   ],
   themeConfig: {
+    logo: "/favicon.ico",
     search: {
       provider: 'local'
     },
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Guide', link: '/quick-start' }
+      { text: 'Introduction', link: '/intro/about' },
+      { text: 'Guide', link: '/guide/quick-start' }
     ],
 
     sidebar: [
       {
         text: 'Introduction',
         items: [
-          { text: 'About', link: 'introduction/index.md' },
-          { text: 'Schema', link: 'introduction/schema.md' }
+          { text: 'About', link: '/intro/about' },
+          { text: 'Schema', link: '/intro/schema' }
         ]
       },
       {
         text: 'Guide',
         items: [
-          { text: 'Quick Start', link: '/quick-start' },
-          { text: 'Configuration', link: '/config' }
+          { text: 'Quick Start', link: '/guide/quick-start' },
+          { text: 'Configuration', link: '/guide/config' }
         ]
       }
     ],

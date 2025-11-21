@@ -24,13 +24,13 @@ Each table is described in detail below.
 
 Let's break down each table and have a closer look.
 
-| Table             | Description                                                                      |
-|-------------------|----------------------------------------------------------------------------------|
-| `alembic_version` | Single row containing the Alembic migration version.                             |
-| `spatial_ref_sys` | Coordinate reference systems (CRS) available.                                    |
-| `landslides`      | Event records (e.g., rockfalls, debris flows, ...) with date and point geometry. |
-| `classification`  | Lookup table with classification labels used by the `landslides` table.          |
-| `sources`         | Metadata about original data sources linked to event records.                    |
+| Table             | Description                                                                                    |
+|-------------------|------------------------------------------------------------------------------------------------|
+| `alembic_version` | Single row containing the Alembic migration version.                                           |
+| `spatial_ref_sys` | Coordinate reference systems (CRS) available.                                                  |
+| `landslides`      | Mass movement event records (e.g., rockfalls, debris flows, ...) with date and point geometry. |
+| `classification`  | Lookup table with classification labels used by the `landslides` table.                        |
+| `sources`         | Metadata about original data sources linked to event records.                                  |
 
 
 ### alembic_version
@@ -158,7 +158,7 @@ table (via `classification_id`). The available values are listed below:
 
 Each record is classified into one of these categories. The categories itself
 were derived from the GeoSphere data set (see 
-[Data Sources](index.md#data-sources) for more info).
+[Data Sources](../index#data-sources) for more info).
 
 ::: details
 
@@ -215,7 +215,7 @@ FROM landslides_view;
 
 As an optional (Docker) service a API is provided which could serve as an entry
 point for further applications. The API serves data from this 
-`landslides_view`. See the [Quick Start](../quick-start.md#optional-api) 
+`landslides_view`. See the [Quick Start](../guide/quick-start.md#optional-api) 
 section for more details.
 
 :::

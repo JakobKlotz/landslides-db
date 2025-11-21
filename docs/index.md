@@ -3,31 +3,28 @@
 layout: home
 
 hero:
-  name: "Austrian Landslide Inventory"
-  text: "Comprehensive mass movement data base."
-  tagline: "Open data for research"
-  image:
-    "header.png"
+  name: "oCoMMA"
+  tagline: "open Collection of Mass Movements in Austria"
+  image: "/logo.png"
   actions:
     - theme: brand
-      text: Get Started
-      link: /quick-start
-    - theme: alt
       text: About
-      link: /introduction/index
+      link: /intro/about
+    - theme: alt
+      text: Quick-Start
+      link: /guide/quick-start
 
 features:
-
   - icon:
-      light: /icons/refresh-ccv-light.svg
-      dark: /icons/refresh-ccv-dark.svg
-    title: Comprehensive
-    details: Nationwide, continuously updated inventory of mass movement events
+      light: /icons/microscope-light.svg
+      dark: /icons/microscope-dark.svg
+    title: Research
+    details: Mass movement event data for reproducible research
   - icon:
       light: /icons/shapes-light.svg
       dark: /icons/shapes-dark.svg
     title: Classifications
-    details: Harmonized schema for mass-movement types 
+    details: Harmonized schema for mass movement classifications 
   - icon:
       light: /icons/docker-light.svg
       dark: /icons/docker-dark.svg
