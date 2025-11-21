@@ -24,13 +24,13 @@ Each table is described in detail below.
 
 Let's break down each table and have a closer look.
 
-| Table             | Description                                                                      |
-|-------------------|----------------------------------------------------------------------------------|
-| `alembic_version` | Single row containing the Alembic migration version.                             |
-| `spatial_ref_sys` | Coordinate reference systems (CRS) available.                                    |
-| `landslides`      | Event records (e.g., rockfalls, debris flows, ...) with date and point geometry. |
-| `classification`  | Lookup table with classification labels used by the `landslides` table.          |
-| `sources`         | Metadata about original data sources linked to event records.                    |
+| Table             | Description                                                                                    |
+|-------------------|------------------------------------------------------------------------------------------------|
+| `alembic_version` | Single row containing the Alembic migration version.                                           |
+| `spatial_ref_sys` | Coordinate reference systems (CRS) available.                                                  |
+| `landslides`      | Mass movement event records (e.g., rockfalls, debris flows, ...) with date and point geometry. |
+| `classification`  | Lookup table with classification labels used by the `landslides` table.                        |
+| `sources`         | Metadata about original data sources linked to event records.                                  |
 
 
 ### alembic_version

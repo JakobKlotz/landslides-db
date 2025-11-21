@@ -5,7 +5,7 @@ outline: deep
 # Quick Start
 
 Follow these couple of steps to spin up your own PostGIS instance of the 
-landslides data base using Docker.
+data base using Docker.
 
 ## Prerequisites
 
