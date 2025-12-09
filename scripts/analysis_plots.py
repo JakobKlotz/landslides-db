@@ -7,6 +7,12 @@ import folium
 from folium.plugins import HeatMap
 from folium.plugins import TimestampedGeoJson
 import pandas as pd
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+PLOTS_DIR = BASE_DIR / "plots"
+PLOTS_DIR.mkdir(exist_ok=True)
+
 
 
 Session = create_db_session()
@@ -23,6 +29,7 @@ print(list(landslide_view.columns))
 fig, ax = plt.subplots(figsize=(10, 10))
 landslide_view.plot(ax=ax, column='classification_name', legend=True, markersize=5, cmap='Set1', alpha=0.8)
 plt.title("Landslide Classifications")
+fig.savefig(PLOTS_DIR / "classification_map.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -39,6 +46,8 @@ plt.ylabel("Number of events")
 for i, value in enumerate(classification_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=8, fontweight='bold')
 
+fig = ax.figure
+fig.savefig(PLOTS_DIR / "classification_counts.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -57,6 +66,8 @@ plt.ylabel("Number of events")
 for i, value in enumerate(month_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=8, fontweight='bold')
 
+fig = ax.figure
+fig.savefig(PLOTS_DIR / "events_per_month.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -75,6 +86,9 @@ plt.ylabel("Number of events")
 # Add counts on top of bars
 for i, value in enumerate(year_counts):
     plt.text(i, value + 0.5, str(value), ha='center', va='bottom', fontsize=5, fontweight='bold')
+
+fig = ax.figure
+fig.savefig(PLOTS_DIR / "events_per_year.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -145,6 +159,7 @@ for autotext in autotexts:
 ax.axis('equal')
 plt.title("Proportion of Landslide Classifications")
 plt.tight_layout()
+fig.savefig(PLOTS_DIR / "classification_piechart.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
@@ -168,6 +183,7 @@ ax.legend(title="Classification", bbox_to_anchor=(1.05, 1), loc='upper left')
 # 🔄 Rotate month numbers
 plt.xticks(rotation=0)
 plt.tight_layout()
+fig.savefig(PLOTS_DIR / "events_per_month_by_classification.png", dpi=300, bbox_inches="tight")
 plt.show()
 
 
