@@ -211,8 +211,7 @@ events = events[events.geometry.type == "Point"]
 # Fix date parsing
 events["event_date"] = pd.to_datetime(
     events["event_date"],
-    errors="coerce",
-    infer_datetime_format=True
+    errors="coerce"
 )
 
 # Fix year-only strings (e.g., "1956")
