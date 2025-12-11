@@ -1,0 +1,10 @@
+{
+    "name": "Natur- und Umweltereignisse Kärnten (INSPIRE)",
+    "downloaded": "2025-12-11",
+    "modified": "2025-12-06",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "url": "https://gis.ktn.gv.at/OGD/INSPIRE/NZ_ObservedEvent_KTN_GPKG.zip",
+    "description": "Erfasste Natur- und Umweltereignisse im Bundesland Kärnten: Vereinfachte Umsetzung als Geopackage in der Projektion EPSG:31258",
+    "doi": null
+}
