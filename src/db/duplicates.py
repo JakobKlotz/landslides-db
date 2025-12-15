@@ -135,11 +135,15 @@ def flag_temporal_duplicates(
     dup["duplicated"] = (dup["time_diff_days"] <= days) & (
         dup["same_classification"]
     )
-    print(
-        f"{dataset_name}: Found {dup['duplicated'].sum()} "
+    msg = (
+        f"Found {dup['duplicated'].sum()} "
         f"likely duplicates with a {days}-day threshold. "
         "Flagged them for removal."
     )
+    if dataset_name:
+        msg = f"{dataset_name}: {msg}"
+
+    print(msg)
 
     # map results back to original data (by default join on Index)
     data = data.join(dup["duplicated"])
@@ -153,5 +157,9 @@ def flag_temporal_duplicates(
 
     if remove:
         data = data[~data["duplicated"]]
+        msg = "Removed duplicates."
+        if dataset_name:
+            msg = f"{dataset_name}: {msg}"
+        print(msg)
 
     return data
