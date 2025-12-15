@@ -74,7 +74,7 @@ def is_duplicated(
     return result is not None
 
 
-def flag_duplicates(
+def flag_temporal_duplicates(
     *,
     data: gpd.GeoDataFrame,
     date_column: str,
