@@ -40,4 +40,4 @@ classified as "gravity slide or flow".
 ### landslide
 
 All landslide entries are imported. Since these contain various different
-labels a mapping was defined -> see `landslide-mapping.json`.
+labels a mapping was defined -> see `kaernten-landslide-mapping.json`.
