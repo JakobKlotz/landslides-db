@@ -102,7 +102,13 @@ def flag_duplicates(
     Returns:
         gpd.GeoDataFrame: With an added boolean column `duplicated`.
     """
-    # TODO check if columns exist
+    # check if required columns exist
+    required_cols = [date_column, geometry_column, classification_column]
+    missing_cols = [col for col in required_cols if col not in data.columns]
+    if missing_cols:
+        raise ValueError(
+            f"Missing required columns: {', '.join(missing_cols)}"
+        )
     # get all duplicates (with keep=False)
     dup = data[
         data.duplicated(subset=[geometry_column], keep=False)
