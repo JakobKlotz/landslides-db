@@ -10,11 +10,13 @@ from db.processors.base import BaseProcessor
 class LandKaernten(BaseProcessor):
     """Land Kärnten data set."""
 
-    def __init__(
-        self, *, file_path: str | Path, file_landslides_mapping: str | Path
-    ):
-        # read landslides mapping file
-        with Path(file_landslides_mapping).open("r") as f:
+    def __init__(self, file_path: str | Path):
+        # determine and read landslide mapping file based on given GeoPackage
+        landslides_mapping_file = (
+            Path(file_path).parent / "kaernten-landslide-mapping.json"
+        )
+
+        with landslides_mapping_file.open("r") as f:
             self.landslides_mapping = json.load(f)
 
         super().__init__(file_path=file_path, dataset_name="Land Kärnten")
