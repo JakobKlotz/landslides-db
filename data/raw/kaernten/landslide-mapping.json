@@ -1,0 +1,13 @@
+{
+    "Rutschung": "gravity slide or flow",
+    "Erdstrom": "gravity slide or flow",
+    "Mure": "gravity slide or flow",
+    "Schuttstrom": "gravity slide or flow",
+
+
+    "Blocksturz": "rockfall",
+    "Felssturz": "rockfall",
+    "Steinschlag": "rockfall",
+
+    "Erdfall": "collapse, sinkhole"
+}
