@@ -82,6 +82,7 @@ def flag_temporal_duplicates(
     classification_column: str,
     days: int = 1,
     remove: bool = False,
+    dataset_name: str | None = None,
 ) -> gpd.GeoDataFrame:
     """
     Flags potential duplicates based on time proximity and identical geometry
@@ -99,6 +100,7 @@ def flag_temporal_duplicates(
         days (int): The time gap to flag potential duplicates.
         remove (bool): Whether to remove flagged entries. By default, they are
             kept.
+        data_set_name(str | None): Optional data set name used for messages.
     Returns:
         gpd.GeoDataFrame: With an added boolean column `duplicated`.
     """
@@ -134,7 +136,7 @@ def flag_temporal_duplicates(
         dup["same_classification"]
     )
     print(
-        f"Found {dup['duplicated'].sum()} "
+        f"{dataset_name}: Found {dup['duplicated'].sum()} "
         f"likely duplicates with a {days}-day threshold. "
         "Flagged them for removal."
     )

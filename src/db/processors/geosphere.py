@@ -59,6 +59,7 @@ class GeoSphere(BaseProcessor):
             classification_column="classification",
             days=1,
             remove=True,
+            dataset_name=self.dataset_name,
         )
 
     def populate_classification_table(self):
