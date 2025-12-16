@@ -10,7 +10,8 @@
 # oCoMMA | open Collection of Mass Movements in Austria
 
 This project is dedicated to compiling and sharing **event data on mass 
-movements across Austria**. The goal is to provide researchers with accessible information to accelerate their work.
+movements across Austria**. The goal is to provide researchers with accessible 
+information to accelerate their work.
 
 By consolidating data from various national and international sources, we 
 provide a PostGIS data base that can be easily setup using Docker.
@@ -47,6 +48,8 @@ The inventory is built by incorporating data from the following sources:
     Custom License ([link](./data/raw/nasa-coolr/LICENSE))
 - [WLV](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527)
     No Limitations ([link](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527))
+- [Land Kärnten (Carinthia)](https://www.data.gv.at/datasets/70b85305-d3d1-487a-beff-75fa6d712c28?locale=de)
+    CC BY 4.0 ([link](https://creativecommons.org/licenses/by/4.0/))
 
 > [!NOTE]
 > Each record in the data base is linked to its original source to ensure clear

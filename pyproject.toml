@@ -1,6 +1,6 @@
 [project]
 name = "landslides-db"
-version = "0.1.3"
+version = "0.1.4"
 description = "Open Collection of Mass Movements in Austria"
 readme = "README.md"
 authors = [

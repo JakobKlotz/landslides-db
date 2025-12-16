@@ -116,6 +116,7 @@ The inventory incorporates data from the following sources:
 | [Global Fatal Landslides](https://www.arcgis.com/home/item.html?id=7c9397b261aa436ebfbc41396bd96d06)                                    | [Open Government License](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/) |
 | [NASA COOLR](https://maps.nccs.nasa.gov/arcgis/apps/MapAndAppGallery/index.html?appid=574f26408683485799d02e857e5d9521)                 |     Custom License (provided in the repo)     |
 | [WLV](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527) |     [No Limitations](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527)      |
+| [Land Kärnten (Carinthia)](https://www.data.gv.at/datasets/70b85305-d3d1-487a-beff-75fa6d712c28?locale=de)                              |         [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 
 Each record in the data base is linked to its original source to ensure clear
 data provenance and proper attribution.

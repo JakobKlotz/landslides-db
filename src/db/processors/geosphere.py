@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from db.duplicates import flag_temporal_duplicates
 from db.models import Classification
 from db.processors.base import BaseProcessor
 from db.utils import create_db_session
@@ -48,50 +49,17 @@ class GeoSphere(BaseProcessor):
             subset=["validFrom", "classification", "geometry"], keep="last"
         )
 
-    def flag(self, days: int = 1):
-        """Flag potential duplicates based on a time gap (in days),
-        exact same geometry and classification."""
-        dup = self.data[
-            self.data.duplicated(subset="geometry", keep=False)  # get all dups
-        ].sort_values(by=["geometry", "validFrom"])
-        # need a datetime
-        dup["validFrom"] = pd.to_datetime(dup["validFrom"])
-        # Calculate the time difference in days to the previous entry within
-        # the same geometry group
-        dup["time_diff_days"] = (
-            # use to_wkt(), else groupby fails
-            dup.groupby(dup.geometry.to_wkt())["validFrom"].diff()
-        ).dt.days
-
-        # Check if the classification is the same as the previous entry
-        # in the group
-        dup["same_classification"] = dup.groupby(dup.geometry.to_wkt())[
-            "classification"
-        ].transform(lambda x: x.eq(x.shift()))
-
-        # Flag potential errors if the time gap is small (e.g., <= 1 day)
-        # and classification is the same
-        dup["is_likely_error"] = (dup["time_diff_days"] <= days) & (
-            dup["same_classification"]
-        )
-        print(
-            f"Found {dup['is_likely_error'].sum()} "
-            f"likely duplicates with a {days}-day threshold. "
-            "Flagged them for removal."
-        )
-        # map results back to original data
-        self.data = self.data.merge(
-            dup[["inspireId_localId", "is_likely_error"]],
-            on="inspireId_localId",
-            how="left",
-        )
-        # use mask() instead of fillna() to avoid upcasting warning
-        # convert NaN to False
-        self.data["is_likely_error"] = self.data["is_likely_error"].mask(
-            self.data["is_likely_error"].isna(), False
-        )
-        self.data["is_likely_error"] = self.data["is_likely_error"].astype(
-            bool
+    def remove_temporal_duplicates(self):
+        # For GeoSphere, we only remove likely errors, no check for duplicates
+        # against the DB as it's considered our base dataset.
+        self.data = flag_temporal_duplicates(
+            data=self.data,
+            date_column="validFrom",
+            geometry_column="geometry",
+            classification_column="classification",
+            days=1,
+            remove=True,
+            dataset_name=self.dataset_name,
         )
 
     def populate_classification_table(self):
@@ -130,9 +98,7 @@ class GeoSphere(BaseProcessor):
 
     def import_to_db(self, file_dump: str | None = None):
         """Import the data into a PostGIS database."""
-        # For GeoSphere, we only remove likely errors, no check for duplicates
-        # against the DB as it's considered our base dataset.
-        data_to_import = self.data[~self.data["is_likely_error"]].copy()
+        data_to_import = self.data.copy()
 
         column_map = {
             "classification": "classification",
@@ -151,7 +117,7 @@ class GeoSphere(BaseProcessor):
         self._check_geom()
         self.subset()
         self.clean()
-        self.flag()
+        self.remove_temporal_duplicates()
         self.populate_classification_table()
         self.import_to_db(file_dump=file_dump)
 
