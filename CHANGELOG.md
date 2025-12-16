@@ -1,3 +1,21 @@
+## Version: `0.1.4`
+
+### 🌟 Features
+
+- Added new data:
+    - Implemented preprocessing and importing steps for the Land Kärnten 
+        (Carinthia) data set which adds more than 2600 observations.
+    - `db/processors/kaernten.py` adds a corresponding `LandKaernten`
+        processor class, to clean, classify and import the data.
+
+### 🛠 Dev changes
+
+- Refactoring: Flag temporal duplicates:
+    The function `flag_temporal_duplicates()` flags potential 
+    duplicates based on time proximity and identical geometry plus
+    classification. The functionality was refactored and added to 
+    `db.duplicates.py` for reuse.
+
 ## Version: `0.1.3`
 
 ### 🌟 Features
