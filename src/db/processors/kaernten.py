@@ -133,6 +133,8 @@ class LandKaernten(BaseProcessor):
         column_map = {
             "classification": "classification",
             "date": "validFrom",
+            # import original hazard labels
+            "report": "QualitativeValue",
         }
         self._import_to_db(
             data_to_import=self.data,
