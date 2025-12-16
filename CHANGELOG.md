@@ -4,7 +4,7 @@
 
 - Added new data:
     - Implemented preprocessing and importing steps for the Land Kärnten 
-        (Carinthia) data set which adds more than 2700 observations.
+        (Carinthia) data set which adds more than 2600 observations.
     - `db/processors/kaernten.py` adds a corresponding `LandKaernten`
         processor class, to clean, classify and import the data.
 
