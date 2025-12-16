@@ -3,7 +3,7 @@ from pathlib import Path
 
 import typer
 
-from db import WLV, GeoSphere, GlobalFatalLandslides, Nasa
+from db import WLV, GeoSphere, GlobalFatalLandslides, LandKaernten, Nasa
 
 in_base_path, out_base_path = (
     Path("./data/raw"),
@@ -19,6 +19,7 @@ processors = [
     ),
     (Nasa, "nasa-coolr/nasa-coolr-reports-point.gpkg"),
     (WLV, "wlv/wlv.gpkg"),
+    (LandKaernten, "kaernten/kaernten.gpkg"),
 ]
 
 
