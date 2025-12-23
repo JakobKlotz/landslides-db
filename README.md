@@ -30,7 +30,8 @@ provide a PostGIS data base that can be easily setup using Docker.
 To get your own instance of the data base up and running, please follow the 
 setup instructions which use Docker for easy deployment.
 
-Please refer to the [**Quick Start Guide**](https://docs.geohub.at/quick-start.html).
+Please refer to the
+[**Quick Start Guide**](https://docs.geohub.at/guide/quick-start.html).
 
 ## Help
 
