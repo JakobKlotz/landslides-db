@@ -4,21 +4,21 @@
 ![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg?style=for-the-badge)
 
 <div align="center">
-  <img src="./docs/public/header.png" alt="Header" width="700"/>
+  <img src="./docs/public/logo.png" alt="Header" width="250"/>
 </div>
 
-# Austrian Landslide Inventory
+# oCoMMA | open Collection of Mass Movements in Austria
 
-This project aims to build the most comprehensive, open-source landslide 
-data base for Austria. The data base encompasses different mass movement 
-phenomena (see [Classifications](#classifications) for more info).
+This project is dedicated to compiling and sharing **event data on mass 
+movements across Austria**. The goal is to provide researchers with accessible 
+information to accelerate their work.
 
 By consolidating data from various national and international sources, we 
-provide a PostGIS database that can be easily setup using Docker.
+provide a PostGIS data base that can be easily setup using Docker.
 
 > [!WARNING]
-> This project is under active development. The database schema and its records
-> are subject to change.
+> This project is under active development. The data base schema and its 
+> records are subject to change.
 
 > [!TIP]
 > For quick access without setting up the data base, a GeoPackage dump is 
@@ -27,7 +27,7 @@ provide a PostGIS database that can be easily setup using Docker.
 
 ## Getting Started
 
-To get your own instance of the database up and running, please follow the 
+To get your own instance of the data base up and running, please follow the 
 setup instructions which use Docker for easy deployment.
 
 Please refer to the [**Quick Start Guide**](https://docs.geohub.at/quick-start.html).
@@ -48,9 +48,11 @@ The inventory is built by incorporating data from the following sources:
     Custom License ([link](./data/raw/nasa-coolr/LICENSE))
 - [WLV](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527)
     No Limitations ([link](https://geometadatensuche.inspire.gv.at/metadatensuche/inspire/ger/catalog.search#/metadata/ccca05aa-728d-4218-9f4c-81286c537527))
+- [Land Kärnten (Carinthia)](https://www.data.gv.at/datasets/70b85305-d3d1-487a-beff-75fa6d712c28?locale=de)
+    CC BY 4.0 ([link](https://creativecommons.org/licenses/by/4.0/))
 
 > [!NOTE]
-> Each record in the database is linked to its original source to ensure clear
+> Each record in the data base is linked to its original source to ensure clear
 > data provenance and proper attribution.
 
 We are continuously working on adding more data sources to enhance the
@@ -58,16 +60,14 @@ comprehensiveness of the inventory.
 
 ## Classifications
 
-The database stores a classification for each event and includes multiple types
-of mass-movement phenomena, **not only landslides**. Types present include:
+The data base stores a classification for each event and includes multiple 
+types of mass-movement phenomena. Types present are:
 
 - gravity slide or flow
 - rockfall
 - mass movement (undefined)
 - deep‑seated rock slope deformation
 - collapse / sinkhole
-
-See the classification table in the database for the set of types.
 
 ## Contributing
 

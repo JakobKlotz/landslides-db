@@ -1,7 +1,7 @@
 [project]
 name = "landslides-db"
 version = "0.1.5"
-description = "Austrian landslide inventory"
+description = "Open Collection of Mass Movements in Austria"
 readme = "README.md"
 authors = [
     {name = "Jakob Klotz", email = "jakob.klotz@mci.edu"},
