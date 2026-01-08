@@ -40,12 +40,11 @@ fig.savefig(PLOTS_DIR / "classification_map.svg", dpi=300, bbox_inches="tight")
 
 
 ## Plot the number of events by month
+fig, ax = plt.subplots(figsize=(10, 6))
 landslide_view["event_date"] = gpd.pd.to_datetime(landslide_view["date"])
 landslide_view["event_month"] = landslide_view["event_date"].dt.month
 month_counts = landslide_view["event_month"].value_counts().sort_index()
-ax = month_counts.plot(
-    kind="bar", figsize=(10, 6), color="lightgreen", fontsize=6
-)
+month_counts.plot(ax=ax, kind="bar", color="lightgreen", fontsize=6)
 
 plt.title("Number of events by Month")
 plt.xticks(rotation=0)
@@ -63,16 +62,15 @@ for i, value in enumerate(month_counts):
         fontsize=8,
         fontweight="bold",
     )
-
-fig = ax.figure
 fig.savefig(PLOTS_DIR / "events_per_month.svg", dpi=300, bbox_inches="tight")
 
 ## Plot the number of events by year
+fig, ax = plt.subplots(figsize=(10, 6))
 landslide_view["event_year"] = landslide_view["event_date"].dt.year
 year_counts = landslide_view["event_year"].value_counts().sort_index()
 # remove years that are less than 50 events
 year_counts = year_counts[year_counts >= 50]
-ax = year_counts.plot(kind="bar", figsize=(10, 6), color="salmon", fontsize=6)
+year_counts.plot(ax=ax, kind="bar", color="salmon", fontsize=6)
 plt.title("Number of events by Year (>=50)")
 plt.xticks(rotation=90)
 plt.xlabel("Year")
@@ -88,8 +86,6 @@ for i, value in enumerate(year_counts):
         fontsize=5,
         fontweight="bold",
     )
-
-fig = ax.figure
 fig.savefig(PLOTS_DIR / "events_per_year.svg", dpi=300, bbox_inches="tight")
 
 ## Pie chart of landslide classifications with percentage labels
