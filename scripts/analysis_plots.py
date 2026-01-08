@@ -21,10 +21,6 @@ with Session() as session:
     landslide_view = gpd.read_postgis(
         "SELECT * FROM landslides_view", session.bind, geom_col="geom"
     )
-#print(landslide_view)
-print(list(landslide_view.columns))
-#print(type(landslide_view))
-
 
 ## Plotting the landslide data
 
@@ -36,7 +32,6 @@ ax.set_title("Landslide Classifications")
 ax.set_axis_off()
 plt.title("Landslide Classifications")
 fig.savefig(PLOTS_DIR / "classification_map.svg", dpi=300, bbox_inches="tight")
-plt.show()
 
 
 ## Plot the number of events by month
@@ -56,8 +51,6 @@ for i, value in enumerate(month_counts):
 
 fig = ax.figure
 fig.savefig(PLOTS_DIR / "events_per_month.svg", dpi=300, bbox_inches="tight")
-plt.show()
-
 
 ## Plot the number of events by year
 landslide_view['event_year'] = landslide_view['event_date'].dt.year
@@ -75,8 +68,6 @@ for i, value in enumerate(year_counts):
 
 fig = ax.figure
 fig.savefig(PLOTS_DIR / "events_per_year.svg", dpi=300, bbox_inches="tight")
-plt.show()
-
 
 ## Pie chart of landslide classifications with percentage labels
 # Data
@@ -152,8 +143,6 @@ plt.title("Proportion of Landslide Classifications")
 plt.tight_layout()
 
 fig.savefig(PLOTS_DIR / "classification_piechart.svg", dpi=300, bbox_inches="tight")
-plt.show()
-
 
 ## Plot the number of events per month in a bar plot with different colors for classifications
 fig, ax = plt.subplots(figsize=(12, 8))
@@ -172,8 +161,7 @@ ax.set_title("Number of Events per Month by Classification")
 ax.set_xlabel("Month")
 ax.set_ylabel("Number of Events")
 ax.legend(title="Classification", bbox_to_anchor=(1.05, 1), loc='upper left')
-# 🔄 Rotate month numbers
+# Rotate month numbers
 plt.xticks(rotation=0)
 plt.tight_layout()
 fig.savefig(PLOTS_DIR / "events_per_month_by_classification.svg", dpi=300, bbox_inches="tight")
-plt.show()
