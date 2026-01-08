@@ -36,6 +36,7 @@ cx.add_basemap(ax, source=cx.providers.OpenStreetMap.Mapnik, zoom="auto")
 ax.set_title("Landslide Classifications")
 ax.set_axis_off()
 plt.title("Landslide Classifications")
+# dpi affects the (rasterized) basemap
 fig.savefig(PLOTS_DIR / "classification_map.svg", dpi=300, bbox_inches="tight")
 
 
@@ -62,7 +63,7 @@ for i, value in enumerate(month_counts):
         fontsize=8,
         fontweight="bold",
     )
-fig.savefig(PLOTS_DIR / "events_per_month.svg", dpi=300, bbox_inches="tight")
+fig.savefig(PLOTS_DIR / "events_per_month.svg", bbox_inches="tight")
 
 ## Plot the number of events by year
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -86,7 +87,7 @@ for i, value in enumerate(year_counts):
         fontsize=5,
         fontweight="bold",
     )
-fig.savefig(PLOTS_DIR / "events_per_year.svg", dpi=300, bbox_inches="tight")
+fig.savefig(PLOTS_DIR / "events_per_year.svg", bbox_inches="tight")
 
 ## Pie chart of landslide classifications with percentage labels
 # Data
@@ -163,9 +164,7 @@ ax.axis("equal")
 plt.title("Proportion of Landslide Classifications")
 plt.tight_layout()
 
-fig.savefig(
-    PLOTS_DIR / "classification_piechart.svg", dpi=300, bbox_inches="tight"
-)
+fig.savefig(PLOTS_DIR / "classification_piechart.svg", bbox_inches="tight")
 
 # Plot the number of events per month in a bar plot with different colors
 #  for classifications
@@ -189,6 +188,5 @@ plt.xticks(rotation=0)
 plt.tight_layout()
 fig.savefig(
     PLOTS_DIR / "events_per_month_by_classification.svg",
-    dpi=300,
     bbox_inches="tight",
 )
